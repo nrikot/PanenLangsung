@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 150 10% 8%;
+    --muted: 150 6% 96%;
+    --muted-foreground: 150 5% 40%;
+    --card: 0 0% 100%;
+    --card-foreground: 150 10% 8%;
+    --border: 150 10% 92%;
+    --primary: 142 72% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 150 10% 96%;
+    --secondary-foreground: 150 10% 15%;
+    --accent: 38 80% 55%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 142 72% 36%;
+    --radius: 0.5rem;
+    --electric-blue: #00aa5b;
+    --electric-blue-2: #82de9b;
+    --electric-green: #1aadda;
+
+    --hero-bg: #f8faf9;
+    --hero-glow: #e8f5e9;
+    --hero-line-color: rgba(0, 0, 0, 0.06);
+    --hero-heading: #0f1a14;
+    --hero-sub: #4a5d52;
+    --hero-badge-bg: rgba(34, 139, 70, 0.08);
+    --hero-badge-border: rgba(34, 139, 70, 0.18);
+    --hero-badge-text: #1a7a3a;
+    --hero-dot: #22c55e;
+    --hero-card-border: rgba(0, 0, 0, 0.08);
+    --hero-card-shadow: rgba(0, 0, 0, 0.06);
+    --hero-card-text: #1a2e22;
+    --hero-card-sub: #5a6e62;
+    --hero-avatars: #d1d5db;
+
+    --feature-border: rgba(0, 0, 0, 0.06);
+    --feature-bg: #f1f5f3;
+    --feature-card-bg: #ffffff;
+    --feature-card-border: rgba(0, 0, 0, 0.06);
+    --feature-card-shadow: rgba(0, 0, 0, 0.04);
+    --feature-icon-bg: rgba(22, 163, 74, 0.08);
+    --feature-icon: var(--electric-blue);
+    --feature-heading: #0f1a14;
+    --feature-sub: #4a5d52;
+
+    --cta-bg: var(--electric-blue);
+    --cta-heading: #ffffff;
+    --cta-sub: rgba(255, 255, 255, 0.85);
+
+    --footer-text: #6b7a70;
+    --footer-border: rgba(0, 0, 0, 0.06);
+
+    --btn-primary-bg: var(--electric-blue);
+    --btn-primary-shadow: rgba(22, 163, 74, 0.25);
+    --btn-primary-ring: rgba(22, 163, 74, 0.2);
+    --btn-primary-text: #ffffff;
+    --btn-outline-border: rgba(0, 0, 0, 0.15);
+    --btn-outline-text: #374151;
+    --btn-outline-hover-bg: rgba(0, 0, 0, 0.03);
+
+    --nav-text: #4a5d52;
+    --nav-hover: #0f1a14;
+    --nav-active: var(--electric-blue);
+    --header-bg: rgba(255, 255, 255, 0.85);
+    --header-border: rgba(0, 0, 0, 0.06);
+  }
+  /* index.css */
+
+  @import url('https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+  .brand-name {
+    font-family: Quantico, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 2.2rem !important;
+  }
+
+  @media (width < 480px) {
+    .brand-name {
+      font-size: 1.5rem !important;
+    }
+  }
+
+  .dark {
+    --background: 13 20 16;
+    --foreground: 150 5% 90%;
+    --muted: 13 20 16;
+    --muted-foreground: 155 8% 58%;
+    --card: 13 20 16;
+    --card-foreground: 150 5% 90%;
+    --border: 150 10% 15%;
+    --primary: 142 72% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 150 10% 12%;
+    --secondary-foreground: 150 5% 80%;
+    --accent: 38 80% 50%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 142 72% 40%;
+    --radius: 0.5rem;
+
+    --hero-bg: #0d1410;
+    --hero-glow: #1a2e22;
+    --hero-line-color: rgba(255, 255, 255, 0.04);
+    --hero-heading: #f0f4f2;
+    --hero-sub: #8b9e93;
+    --hero-badge-bg: rgba(34, 197, 94, 0.1);
+    --hero-badge-border: rgba(34, 197, 94, 0.2);
+    --hero-badge-text: var(--electric-blue);
+    --hero-dot: var(--electric-blue);
+    --hero-card-border: rgba(255, 255, 255, 0.1);
+    --hero-card-shadow: rgba(0, 0, 0, 0.3);
+    --hero-card-text: #f0f4f2;
+    --hero-card-sub: #8b9e93;
+    --hero-avatars: rgba(255, 255, 255, 0.15);
+
+    --feature-border: rgba(255, 255, 255, 0.05);
+    --feature-bg: #0d1410;
+    --feature-card-bg: rgba(255, 255, 255, 0.03);
+    --feature-card-border: rgba(255, 255, 255, 0.05);
+    --feature-card-shadow: rgba(0, 0, 0, 0.2);
+    --feature-icon-bg: rgba(74, 222, 128, 0.1);
+    --feature-icon: var(--electric-blue);
+    --feature-heading: #f0f4f2;
+    --feature-sub: #8b9e93;
+
+    --cta-bg: #14532d;
+    --cta-heading: #f0f4f2;
+    --cta-sub: rgba(240, 244, 242, 0.7);
+
+    --footer-text: #6b7a70;
+    --footer-border: rgba(255, 255, 255, 0.05);
+
+    --btn-primary-bg: var(--electric-blue);
+    --btn-primary-shadow: rgba(22, 163, 74, 0.2);
+    --btn-primary-ring: rgba(22, 163, 74, 0.2);
+    --btn-primary-text: #ffffff;
+    --btn-outline-border: rgba(255, 255, 255, 0.1);
+    --btn-outline-text: #d1d5db;
+    --btn-outline-hover-bg: rgba(255, 255, 255, 0.05);
+
+    --nav-text: #8b9e93;
+    --nav-hover: #f0f4f2;
+    --nav-active: var(--electric-blue);
+    --header-bg: rgba(13, 20, 16, 0.8);
+    --header-border: rgba(255, 255, 255, 0.05);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Topographic line pattern for dark mode hero */
+.hero-topo-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 200 Q100 160 200 200 T400 200' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 180 Q100 140 200 180 T400 180' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 220 Q100 180 200 220 T400 220' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 160 Q100 120 200 160 T400 160' fill='none' stroke='%23ffffff' stroke-width='0.4'/%3E%3Cpath d='M0 240 Q100 200 200 240 T400 240' fill='none' stroke='%23ffffff' stroke-width='0.4'/%3E%3Cpath d='M0 140 Q100 100 200 140 T400 140' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 260 Q100 220 200 260 T400 260' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 120 Q100 80 200 120 T400 120' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 280 Q100 240 200 280 T400 280' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3C/svg%3E");
+  background-size: 400px 400px;
+}

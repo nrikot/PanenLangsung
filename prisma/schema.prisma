@@ -1,0 +1,446 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  petani
+  pembeli
+  admin
+}
+
+enum VerificationStatus {
+  pending
+  verified
+  rejected
+}
+
+enum ProductStatus {
+  aktif
+  pre_order
+  habis
+  nonaktif
+}
+
+enum AuctionStatus {
+  draft
+  aktif
+  berakhir
+  dibatalkan
+  selesai
+}
+
+enum AuctionSelectionMode {
+  otomatis
+  manual
+}
+
+enum ChatContextType {
+  product
+  auction
+  rfq
+  order
+}
+
+enum ChatMessageType {
+  text
+  counter_offer
+}
+
+enum OfferStatus {
+  pending
+  accepted
+  declined
+}
+
+enum OrderStatus {
+  negotiation
+  confirmed
+  packed
+  shipped
+  arrived
+  delivered
+  cancelled
+}
+
+enum EscrowStatus {
+  pending_payment
+  paid_to_escrow
+  released
+  refunded
+  disputed
+}
+
+enum Unit {
+  kg
+  ikat
+  ekor
+}
+
+enum Grade {
+  A
+  B
+  C
+}
+
+enum DocumentStatus {
+  pending
+  approved
+  rejected
+}
+
+enum RfqStatus {
+  open
+  closed
+  cancelled
+}
+
+enum ReviewRole {
+  buyer
+  seller
+}
+
+enum TrackingStatus {
+  packed
+  shipped
+  arrived
+  delivered
+}
+
+enum NotificationType {
+  verification
+  chat
+  order
+  auction
+  escrow
+  tracking
+  rfq
+  review
+  dispute
+  system
+}
+
+enum DisputeStatus {
+  none
+  raised
+  resolved
+}
+
+enum OrderSourceType {
+  direct
+  auction
+  rfq
+  chat_offer
+}
+
+model User {
+  id                 String             @id
+  email              String             @unique
+  role               Role
+  name               String
+  phone              String
+  address            String
+  latitude           Float?
+  longitude          Float?
+  verificationStatus VerificationStatus @default(pending)
+  businessName       String?
+  npwp               String?
+  nib                String?
+  businessType       String?
+  groupFarmerNumber  String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  userCommodities       UserCommodity[]
+  products              Product[]
+  auctions              Auction[]
+  bids                  AuctionBid[]
+  rfqs                  Rfq[]
+  quotes                RfqQuote[]
+  chatThreadsAsP1       ChatThread[]       @relation("Participant1")
+  chatThreadsAsP2       ChatThread[]       @relation("Participant2")
+  chatMessages          ChatMessage[]
+  ordersAsBuyer         Order[]            @relation("BuyerOrders")
+  ordersAsSeller        Order[]            @relation("SellerOrders")
+  escrowAsBuyer         EscrowTransaction[] @relation("BuyerEscrow")
+  escrowAsSeller        EscrowTransaction[] @relation("SellerEscrow")
+  reviewsGiven          Review[]           @relation("Reviewer")
+  reviewsReceived       Review[]           @relation("Reviewee")
+  verificationDocuments VerificationDocument[]
+  notifications         Notification[]
+}
+
+model UserCommodity {
+  userId      String
+  commodityId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commodity   Commodity @relation(fields: [commodityId], references: [id], onDelete: Cascade)
+
+  @@id([userId, commodityId])
+}
+
+model CommodityCategory {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  commodities Commodity[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Commodity {
+  id              String            @id @default(uuid())
+  categoryId      String
+  category        CommodityCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name            String
+  userCommodities UserCommodity[]
+  products        Product[]
+  auctions        Auction[]
+  rfqs            Rfq[]
+  orders          Order[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([categoryId, name])
+}
+
+model Product {
+  id                String        @id @default(uuid())
+  farmerId          String
+  commodityId       String
+  title             String
+  description       String
+  price             Float
+  unit              Unit
+  grade             Grade
+  quantityAvailable Float
+  harvestDate       DateTime?
+  isPreorder        Boolean       @default(false)
+  latitude          Float
+  longitude         Float
+  status            ProductStatus @default(aktif)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  farmer    User          @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  commodity Commodity     @relation(fields: [commodityId], references: [id], onDelete: Cascade)
+  photos    ProductPhoto[]
+}
+
+model ProductPhoto {
+  id        String   @id @default(uuid())
+  productId String
+  fileUrl   String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model VerificationDocument {
+  id              String         @id @default(uuid())
+  userId          String
+  documentType    String
+  fileUrl         String
+  status          DocumentStatus @default(pending)
+  rejectionReason String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Auction {
+  id            String               @id @default(uuid())
+  farmerId      String
+  commodityId   String
+  title         String
+  quantity      Float
+  unit          Unit
+  startPrice    Float
+  reservePrice  Float
+  startTime     DateTime
+  endTime       DateTime
+  selectionMode AuctionSelectionMode
+  status        AuctionStatus        @default(draft)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  farmer    User        @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  commodity Commodity   @relation(fields: [commodityId], references: [id], onDelete: Cascade)
+  bids      AuctionBid[]
+}
+
+model AuctionBid {
+  id           String      @id @default(uuid())
+  auctionId    String
+  buyerId      String
+  pricePerUnit Float
+  quantity     Float
+  message      String?
+  status       OfferStatus @default(pending)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  buyer   User    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+}
+
+model Rfq {
+  id               String    @id @default(uuid())
+  buyerId          String
+  commodityId      String
+  quantity         Float
+  unit             Unit
+  targetPrice      Float?
+  deliveryLocation String
+  neededBy         DateTime
+  status           RfqStatus @default(open)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  buyer     User       @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  commodity Commodity  @relation(fields: [commodityId], references: [id], onDelete: Cascade)
+  quotes    RfqQuote[]
+}
+
+model RfqQuote {
+  id           String      @id @default(uuid())
+  rfqId        String
+  farmerId     String
+  pricePerUnit Float
+  quantity     Float
+  message      String?
+  status       OfferStatus @default(pending)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  rfq    Rfq  @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  farmer User @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+}
+
+model ChatThread {
+  id             String          @id @default(uuid())
+  participant1Id String
+  participant2Id String
+  contextType    ChatContextType
+  contextId      String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  participant1 User         @relation("Participant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2 User         @relation("Participant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  messages     ChatMessage[]
+
+  @@unique([participant1Id, participant2Id, contextType, contextId])
+}
+
+model ChatMessage {
+  id            String          @id @default(uuid())
+  threadId      String
+  senderId      String
+  type          ChatMessageType @default(text)
+  content       String?
+  offerPrice    Float?
+  offerQuantity Float?
+  offerStatus   OfferStatus?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  thread ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id            String          @id @default(uuid())
+  buyerId       String
+  sellerId      String
+  commodityId   String
+  quantity      Float
+  unit          Unit
+  agreedPrice   Float
+  totalAmount   Float
+  status        OrderStatus
+  escrowStatus  EscrowStatus    @default(pending_payment)
+  disputeReason String?
+  disputeStatus DisputeStatus   @default(none)
+  sourceType    OrderSourceType?
+  sourceId      String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  buyer             User               @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller            User               @relation("SellerOrders", fields: [sellerId], references: [id], onDelete: Cascade)
+  commodity         Commodity          @relation(fields: [commodityId], references: [id], onDelete: Cascade)
+  reviews           Review[]
+  escrowTransactions EscrowTransaction[]
+  trackingEvents    OrderTrackingEvent[]
+}
+
+model EscrowTransaction {
+  id                String       @id @default(uuid())
+  orderId           String
+  buyerId           String
+  sellerId          String
+  amount            Float
+  releasedAmount    Float        @default(0)
+  refundedAmount    Float        @default(0)
+  paymentProvider   String
+  providerReference String?
+  status            EscrowStatus @default(pending_payment)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  releasedAt        DateTime?
+
+  order  Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  buyer  User  @relation("BuyerEscrow", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller User  @relation("SellerEscrow", fields: [sellerId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id              String     @id @default(uuid())
+  orderId         String
+  reviewerId      String
+  revieweeId      String
+  role            ReviewRole
+  ratingFreshness Int?
+  ratingSize      Int?
+  ratingQuality   Int?
+  ratingPayment   Int?
+  comment         String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  order    Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  reviewer User  @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewee User  @relation("Reviewee", fields: [revieweeId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, reviewerId])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model OrderTrackingEvent {
+  id        String         @id @default(uuid())
+  orderId   String
+  status    TrackingStatus
+  note      String?
+  createdAt DateTime       @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
