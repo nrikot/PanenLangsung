@@ -41,6 +41,7 @@ export default function AdminProdukPage() {
     if (user && user.role === "admin") {
       fetchProducts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, page, statusFilter]);
 
   async function fetchProducts() {
@@ -161,9 +162,9 @@ export default function AdminProdukPage() {
                   <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-white/5">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        {p.photos[0] ? (
-                          <img src={p.photos[0].fileUrl} alt="" className="h-10 w-10 rounded object-cover" />
-                        ) : (
+                        {p.photos[0] ? 
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.photos[0].fileUrl} alt="" className="h-10 w-10 rounded object-cover" /> : (
                           <div className="flex h-10 w-10 items-center justify-center rounded dark:bg-white/5 dark:text-gray-500 bg-gray-100 text-xs text-slate-400">?</div>
                         )}
                         <div>

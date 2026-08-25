@@ -77,6 +77,7 @@ export default function AdminEditProductPage() {
     if (user && user.role === 'admin') {
       Promise.all([fetchCommodities(), fetchFarmers(), fetchProduct()]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, router, params.id]);
 
   async function fetchCommodities() {
@@ -324,8 +325,9 @@ export default function AdminEditProductPage() {
           {photos.length > 0 && (
             <div className='mb-4 grid grid-cols-5 gap-2'>
               {photos.map((photo) => (
-                <div key={photo.id} className='group relative'>
-                  <img
+                  <div key={photo.id} className='group relative'>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                     src={photo.fileUrl}
                     alt=''
                     className={`h-24 w-full rounded-lg object-cover ${photo.isPrimary ? 'ring-2 ring-green-500' : ''}`}

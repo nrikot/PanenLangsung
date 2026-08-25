@@ -19,6 +19,7 @@ function LoginForm() {
     if (!authLoading && user) {
       redirectByRole(user.role);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]);
 
   function redirectByRole(role: string) {

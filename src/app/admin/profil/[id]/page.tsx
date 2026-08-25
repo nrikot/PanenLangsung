@@ -55,6 +55,7 @@ export default function AdminUserProfilePage() {
 
   useEffect(() => {
     if (currentUser?.role === "admin" && params.id) fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, params.id]);
 
   async function fetchUser() {

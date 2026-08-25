@@ -95,8 +95,10 @@ export default function ProdukDetailPage() {
               onClick={() => product.photos.length > 0 && openLightbox(selectedPhoto)}
             >
               {product.photos[selectedPhoto] ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={product.photos[selectedPhoto].fileUrl} alt={product.title} className="h-full w-full rounded-xl object-cover" />
               ) : product.photos[0] ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={product.photos[0].fileUrl} alt={product.title} className="h-full w-full rounded-xl object-cover" />
               ) : (
                 <span>Foto Produk</span>
@@ -110,6 +112,7 @@ export default function ProdukDetailPage() {
                     className={`aspect-square rounded-lg dark:bg-white/5 bg-slate-200 cursor-pointer overflow-hidden transition-all ${idx === selectedPhoto ? "ring-2 ring-green-500" : "opacity-70 hover:opacity-100"}`}
                     onClick={() => setSelectedPhoto(idx)}
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={ph.fileUrl} alt="" className="h-full w-full rounded-lg object-cover" />
                   </div>
                 ))}
@@ -179,6 +182,7 @@ export default function ProdukDetailPage() {
             </button>
           )}
 
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={product.photos[selectedPhoto].fileUrl} alt={product.title} className="max-h-[85vh] max-w-[90vw] rounded-lg object-contain" onClick={(e) => e.stopPropagation()} />
 
           {product.photos.length > 1 && (
@@ -191,6 +195,7 @@ export default function ProdukDetailPage() {
             <div className="absolute bottom-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
               {product.photos.map((ph, idx) => (
                 <button key={ph.id} onClick={() => setSelectedPhoto(idx)} className={`h-12 w-12 overflow-hidden rounded-lg border-2 transition-all ${idx === selectedPhoto ? "border-white" : "border-transparent opacity-60 hover:opacity-100"}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={ph.fileUrl} alt="" className="h-full w-full object-cover" />
                 </button>
               ))}

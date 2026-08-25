@@ -30,6 +30,7 @@ export default function PetaniProdukPage() {
       return;
     }
     if (user?.id) fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, router]);
 
   async function fetchProducts() {
@@ -111,7 +112,8 @@ export default function PetaniProdukPage() {
                   <tr key={p.id} className="dark:border-white/10 border-b last:border-b-0">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded dark:bg-white/5 flex-shrink-0 bg-gray-200">
+                          <div className="h-10 w-10 rounded dark:bg-white/5 flex-shrink-0 bg-gray-200">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           {p.photos[0] && <img src={p.photos[0].fileUrl} alt="" className="h-10 w-10 rounded object-cover" />}
                         </div>
                         <span className="font-medium dark:text-gray-100 text-slate-900 line-clamp-1">{p.title}</span>

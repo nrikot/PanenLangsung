@@ -44,8 +44,6 @@ export default function RfqPublicPage() {
 
   useEffect(() => { fetch('/api/v1/commodities').then(r => r.json()).then(d => { const all: Commodity[] = []; (d.categories || []).forEach((c: { commodities: Commodity[] }) => c.commodities.forEach(x => all.push(x))); setCommodities(all); }).catch(() => {}); }, []);
 
-  useEffect(() => { fetchRfqs(); }, [page, filters.commodity_id, filters.status, filters.sort]);
-
   const fetchRfqs = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams({ page: String(page), limit: String(ITEMS_PER_PAGE), sort: filters.sort });
@@ -58,6 +56,8 @@ export default function RfqPublicPage() {
     setTotal(data.pagination?.total || 0);
     setLoading(false);
   }, [page, filters.commodity_id, filters.status, filters.sort]);
+
+  useEffect(() => { fetchRfqs(); }, [page, filters.commodity_id, filters.status, filters.sort, fetchRfqs]);
 
   return (
     <div className="min-h-screen dark:bg-[#0d1410] bg-slate-50">

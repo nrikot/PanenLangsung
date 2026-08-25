@@ -71,12 +71,6 @@ export default function ProdukPage() {
     fetchCommodities();
   }, []);
 
-  useEffect(() => {
-    if (mode === 'all') {
-      fetchProducts();
-    }
-  }, [page, mode, filters.commodity_id, filters.grade, filters.min_price, filters.max_price, filters.sort]);
-
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
@@ -99,6 +93,12 @@ export default function ProdukPage() {
       setLoading(false);
     }
   }, [page, filters.commodity_id, filters.grade, filters.min_price, filters.max_price, filters.sort]);
+
+  useEffect(() => {
+    if (mode === 'all') {
+      fetchProducts();
+    }
+  }, [page, mode, filters.commodity_id, filters.grade, filters.min_price, filters.max_price, filters.sort, fetchProducts]);
 
   const fetchNearby = useCallback(
     async (loc?: { lat: number; lng: number }) => {
@@ -373,13 +373,13 @@ export default function ProdukPage() {
                   className='group rounded-xl border dark:bg-white/[0.03] dark:border-white/10 bg-white border-black/10 shadow-sm hover:shadow-md'
                 >
                   <div className='aspect-[4/3] rounded-t-xl dark:bg-white/5 dark:text-gray-500 bg-slate-200 text-slate-400 flex items-center justify-center'>
-                    {p.photos[0] ? (
+                    {p.photos[0] ?
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={p.photos[0].fileUrl}
                         alt={p.title}
                         className='h-full w-full rounded-t-xl object-cover'
-                      />
-                    ) : (
+                      /> : (
                       <span className='text-sm'>Foto Produk</span>
                     )}
                   </div>

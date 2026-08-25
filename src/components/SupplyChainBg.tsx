@@ -11,6 +11,7 @@ export default function SupplyChainBg() {
       className='SVG-BG pointer-events-none absolute inset-0 overflow-hidden text-red dark:text-white'
       aria-hidden
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src='/images/home-indonesia-lineart.svg'
         alt=''

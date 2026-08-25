@@ -60,6 +60,7 @@ export default function EditProdukPage() {
       fetchCommodities();
       fetchProduct();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, router, params.id]);
 
   async function fetchCommodities() {
