@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import { useAuth } from '@/lib/auth-context';
+import { buildErrorMessage } from '@/lib/utils';
 
 interface Auction {
   id: string;
@@ -140,7 +141,7 @@ export default function LelangDetailPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(buildErrorMessage(data));
       setBidMsg('Penawaran berhasil dikirim!');
       setBidForm({ pricePerUnit: '', quantity: '', message: '' });
       fetchAuction();
@@ -423,7 +424,7 @@ export default function LelangDetailPage() {
                             alert('Pemenang dipilih!');
                             fetchAuction();
                           } else {
-                            alert(data.error);
+                            alert(buildErrorMessage(data));
                           }
                         }}
                         className='mt-2 rounded-lg bg-green-700 px-4 py-1 text-xs font-semibold text-white hover:bg-green-800'

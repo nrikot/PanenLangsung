@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useAuth } from "@/lib/auth-context";
+import { buildErrorMessage } from "@/lib/utils";
 
 interface Auction {
   id: string; title: string; quantity: number; unit: string; startPrice: number; reservePrice: number;
@@ -64,7 +65,9 @@ export default function LelangPetaniPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) {
+        throw new Error(buildErrorMessage(data));
+      }
       setFormMsg("Lelang berhasil dibuat!");
       setShowCreate(false);
       setForm({ commodityId: "", title: "", quantity: "", unit: "kg", startPrice: "", reservePrice: "", startTime: "", endTime: "", selectionMode: "manual" });
@@ -77,7 +80,7 @@ export default function LelangPetaniPage() {
     if (!confirm("Batalkan lelang ini?")) return;
     const res = await fetch(`/api/v1/auctions/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "dibatalkan" }) });
     const data = await res.json();
-    if (res.ok) fetchAuctions(); else alert(data.error);
+    if (res.ok) fetchAuctions(); else alert(buildErrorMessage(data));
   }
 
   return (
@@ -181,6 +184,7 @@ export default function LelangPetaniPage() {
                 </div>
                 <div className="flex gap-2">
                   <Link href={`/lelang/${a.id}`} className="rounded-lg dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 bg-slate-100 text-slate-700 hover:bg-slate-200 px-4 py-1.5 text-xs font-medium">Lihat</Link>
+                  <Link href={`/lelang/${a.id}`} className="rounded-lg dark:bg-blue-500/15 dark:text-blue-400 bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-1.5 text-xs font-medium">Edit</Link>
                   {(a.status === "draft" || a.status === "aktif") && (
                     <button onClick={() => cancelAuction(a.id)} className="rounded-lg dark:bg-red-500/15 dark:text-red-400 bg-red-100 text-red-700 hover:bg-red-200 px-4 py-1.5 text-xs font-medium">Batalkan</button>
                   )}

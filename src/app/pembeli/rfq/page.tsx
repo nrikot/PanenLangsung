@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/lib/auth-context';
+import { buildErrorMessage } from '@/lib/utils';
 
 interface Rfq {
   id: string;
@@ -98,7 +99,9 @@ export default function RfqPembeliPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) {
+        throw new Error(buildErrorMessage(data));
+      }
       setFormMsg('RFQ berhasil dibuat!');
       setShowCreate(false);
       setForm({
@@ -126,7 +129,7 @@ export default function RfqPembeliPage() {
     });
     const data = await res.json();
     if (res.ok) fetchRfqs();
-    else alert(data.error);
+    else alert(buildErrorMessage(data));
   }
 
   return (
@@ -313,6 +316,12 @@ export default function RfqPembeliPage() {
                     className='rounded-lg dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 bg-slate-100 text-slate-700 hover:bg-slate-200 px-4 py-1.5 text-xs font-medium'
                   >
                     Lihat
+                  </Link>
+                  <Link
+                    href={`/rfq/${r.id}`}
+                    className='rounded-lg dark:bg-blue-500/15 dark:text-blue-400 bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-1.5 text-xs font-medium'
+                  >
+                    Edit
                   </Link>
                   {r.status === 'open' && (
                     <button

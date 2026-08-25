@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { buildErrorMessage } from "@/lib/utils";
 
 interface Commodity {
   id: string;
@@ -77,7 +78,7 @@ export default function TambahProdukPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || data.message || "Gagal membuat produk");
+        throw new Error(buildErrorMessage(data));
       }
 
       router.push("/petani/produk");

@@ -127,9 +127,12 @@ export default function AdminPetaniPage() {
                     <td className="px-4 py-3 dark:text-gray-300 text-slate-600 text-center">{f._count.auctions}</td>
                     <td className="px-4 py-3 dark:text-gray-300 text-slate-600 text-center">{f._count.ordersAsSeller}</td>
                     <td className="px-4 py-3 dark:text-[#8b9e93] text-slate-500 text-xs">{formatDate(f.createdAt)}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 flex gap-2">
                       <Link href={`/admin/profil/${f.id}`} className="rounded-lg dark:bg-white/5 dark:text-green-400 dark:hover:bg-white/10 bg-slate-100 text-green-600 hover:bg-slate-200 px-3 py-1.5 text-xs font-medium">
                         Lihat
+                      </Link>
+                      <Link href={`/admin/profil/${f.id}`} className="rounded-lg dark:bg-white/5 dark:text-blue-400 dark:hover:bg-white/10 bg-slate-100 text-blue-600 hover:bg-slate-200 px-3 py-1.5 text-xs font-medium">
+                        Edit
                       </Link>
                     </td>
                   </tr>

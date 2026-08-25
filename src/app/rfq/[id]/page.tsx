@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import { useAuth } from '@/lib/auth-context';
+import { buildErrorMessage } from '@/lib/utils';
 
 interface Rfq {
   id: string; quantity: number; unit: string; targetPrice: number | null;
@@ -56,7 +57,7 @@ export default function RfqDetailPage() {
         body: JSON.stringify({ pricePerUnit: Number(quoteForm.pricePerUnit), quantity: Number(quoteForm.quantity), message: quoteForm.message || undefined }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(buildErrorMessage(data));
       setQuoteMsg('Penawaran berhasil dikirim!');
       setQuoteForm({ pricePerUnit: '', quantity: '', message: '' });
       fetchRfq();
@@ -170,7 +171,7 @@ export default function RfqDetailPage() {
                       if (!confirm('Pilih penawaran ini?')) return;
                       const res = await fetch(`/api/v1/rfqs/${id}/select`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ quoteId: q.id }) });
                       const data = await res.json();
-                      if (res.ok) { alert('Penawaran dipilih!'); fetchRfq(); } else { alert(data.error); }
+                      if (res.ok) { alert('Penawaran dipilih!'); fetchRfq(); } else { alert(buildErrorMessage(data)); }
                     }} className="mt-2 rounded-lg bg-green-700 px-4 py-1 text-xs font-semibold text-white hover:bg-green-800">
                       Pilih Penawaran Ini
                     </button>

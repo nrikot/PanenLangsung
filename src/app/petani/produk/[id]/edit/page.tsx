@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { buildErrorMessage } from "@/lib/utils";
 
 interface Commodity {
   id: string;
@@ -125,7 +126,7 @@ export default function EditProdukPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal update");
+      if (!res.ok) throw new Error(buildErrorMessage(data));
 
       router.push("/petani/produk");
     } catch (err: unknown) {

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Header from "@/components/Header";
+import { useAuth } from "@/lib/auth-context";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface Product {
@@ -27,6 +28,7 @@ interface Product {
 
 export default function ProdukDetailPage() {
   const params = useParams();
+  const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState(0);
@@ -85,7 +87,14 @@ export default function ProdukDetailPage() {
       <Header />
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        <Link href="/produk" className="mb-4 inline-block text-sm dark:text-green-400 text-green-600 hover:underline">&larr; Kembali ke Katalog</Link>
+        <div className="flex items-center gap-4 mb-4">
+          <Link href="/produk" className="inline-block text-sm dark:text-green-400 text-green-600 hover:underline">&larr; Kembali ke Katalog</Link>
+          {user?.role === "admin" && (
+            <Link href={`/admin/produk/${product.id}/edit`} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+              Edit Produk
+            </Link>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Foto */}
