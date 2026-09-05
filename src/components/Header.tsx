@@ -2,30 +2,36 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/lib/theme-context';
 import ThemeToggle from '@/components/ThemeToggle';
-import { Menu, X } from 'lucide-react';
-// import { Quantico } from 'next/font/google';
-// const quantico = Quantico({
-//   weight: ['400', '700'],
-//   style: ['normal', 'italic'],
-//   subsets: ['latin'],
-//   variable: '--font-quantico',
-//   display: 'swap',
-// });
+import NotificationBell from '@/components/NotificationBell';
+import { Menu, X, User, LayoutDashboard, LogOut, Shield } from 'lucide-react';
 
 export default function Header() {
   const { user, loading, signOut } = useAuth();
   const { theme } = useTheme();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const isDark = theme === 'dark';
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   async function handleSignOut() {
     setMobileOpen(false);
+    setUserMenuOpen(false);
     await signOut();
     router.push('/');
   }
@@ -44,6 +50,12 @@ export default function Header() {
     }
   }
 
+  function getProfileLink() {
+    if (!user) return '/masuk';
+    if (user.role === 'admin') return `/admin/profil/${user.id}`;
+    return `/${user.role}/profil`;
+  }
+
   const dashboardLink = getDashboardLink();
 
   const headerBg = isDark
@@ -60,7 +72,15 @@ export default function Header() {
   const greenAccent = isDark
     ? 'text-[var(--electric-blue)]'
     : 'text-[var(--electric-blue-2)]';
-  const greenHover = isDark ? 'hover:text-green-300' : 'hover:text-green-700';
+
+  const dropdownBg = isDark
+    ? 'bg-[#1a2a1f] border-white/10'
+    : 'bg-white border-black/10';
+  const dropdownItemHover = isDark
+    ? 'hover:bg-white/5'
+    : 'hover:bg-black/5';
+  const dropdownText = isDark ? 'text-gray-200' : 'text-slate-700';
+  const dropdownSubtext = isDark ? 'text-gray-400' : 'text-slate-500';
 
   return (
     <header
@@ -95,44 +115,95 @@ export default function Header() {
 
           <ThemeToggle />
 
+          {loading ? null : user && <NotificationBell />}
+
           {loading ? (
             <div
               className={`h-9 w-20 animate-pulse rounded-lg ${isDark ? 'bg-white/5' : 'bg-black/5'}`}
             />
           ) : user ? (
-            <div className='flex items-center gap-3'>
-              {dashboardLink && (
-                <Link
-                  href={dashboardLink}
-                  className={`text-sm font-medium transition-colors ${blueAccent} ${greenHover}`}
-                >
-                  Dashboard
-                </Link>
-              )}
-              <Link
-                href={
-                  user.role === 'admin'
-                    ? '/admin/dashboard'
-                    : `/${user.role}/profil`
-                }
-                className={`text-sm transition-colors ${navText}`}
-              >
-                {user.name}
-              </Link>
-              {user.role === 'admin' && (
-                <Link
-                  href={`/admin/profil/${user.id}`}
-                  className={`text-sm transition-colors ${navText}`}
-                >
-                  Profil
-                </Link>
-              )}
+            /* ── desktop user dropdown ── */
+            <div className='relative' ref={userMenuRef}>
               <button
-                onClick={handleSignOut}
-                className={`text-sm transition-colors ${isDark ? 'text-red-400/80 hover:text-red-400' : 'text-red-500 hover:text-red-600'}`}
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
+                  isDark
+                    ? 'border-white/10 text-gray-300 hover:bg-white/5'
+                    : 'border-black/10 text-slate-700 hover:bg-black/5'
+                }`}
               >
-                Keluar
+                <div
+                  className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white ${
+                    user.role === 'admin' ? 'bg-purple-500' : 'bg-[#00aa5b]'
+                  }`}
+                >
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <span className='max-w-[100px] truncate'>{user.name}</span>
+                <svg
+                  className={`h-4 w-4 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+                </svg>
               </button>
+
+              {userMenuOpen && (
+                <div
+                  className={`absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border py-1 shadow-lg ${dropdownBg}`}
+                >
+                  {/* User info header */}
+                  <div className={`border-b px-4 py-3 ${isDark ? 'border-white/5' : 'border-black/5'}`}>
+                    <p className={`text-sm font-semibold ${dropdownText}`}>
+                      {user.name}
+                    </p>
+                    <p className={`text-xs ${dropdownSubtext}`}>
+                      {user.email}
+                    </p>
+                    {user.role === 'admin' && (
+                      <span className='mt-1 inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-400'>
+                        <Shield className='h-3 w-3' />
+                        Admin
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Menu items */}
+                  <div className='py-1'>
+                    {dashboardLink && (
+                      <Link
+                        href={dashboardLink}
+                        onClick={() => setUserMenuOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${dropdownText} ${dropdownItemHover}`}
+                      >
+                        <LayoutDashboard className='h-4 w-4 opacity-60' />
+                        Dashboard
+                      </Link>
+                    )}
+                    <Link
+                      href={getProfileLink()}
+                      onClick={() => setUserMenuOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${dropdownText} ${dropdownItemHover}`}
+                    >
+                      <User className='h-4 w-4 opacity-60' />
+                      Profil
+                    </Link>
+                  </div>
+
+                  {/* Logout */}
+                  <div className={`border-t ${isDark ? 'border-white/5' : 'border-black/5'}`}>
+                    <button
+                      onClick={handleSignOut}
+                      className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'}`}
+                    >
+                      <LogOut className='h-4 w-4 opacity-60' />
+                      Keluar
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className='flex items-center gap-3'>
@@ -156,8 +227,9 @@ export default function Header() {
           )}
         </nav>
 
-        {/* ── mobile right: theme toggle + hamburger ── */}
+        {/* ── mobile right: notification + theme toggle + hamburger ── */}
         <div className='flex items-center gap-2 md:hidden'>
+          {loading ? null : user && <NotificationBell />}
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -182,6 +254,7 @@ export default function Header() {
           className={`border-t px-5 pb-5 pt-4 md:hidden ${isDark ? 'border-white/5' : 'border-black/6'}`}
         >
           <div className='flex flex-col gap-3'>
+            {/* Navigation links */}
             <Link
               href='/produk'
               onClick={() => setMobileOpen(false)}
@@ -204,45 +277,68 @@ export default function Header() {
               RFQ
             </Link>
 
-            <div
-              className={`my-1 h-px ${isDark ? 'bg-white/5' : 'bg-black/6'}`}
-            />
+            {/* Divider */}
+            <div className={`my-1 h-px ${isDark ? 'bg-white/5' : 'bg-black/6'}`} />
 
             {loading ? null : user ? (
               <>
+                {/* User info card */}
+                <div
+                  className={`rounded-xl border p-3 ${
+                    isDark ? 'border-white/10 bg-white/5' : 'border-black/10 bg-black/3'
+                  }`}
+                >
+                  <div className='flex items-center gap-3'>
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white ${
+                        user.role === 'admin' ? 'bg-purple-500' : 'bg-[#00aa5b]'
+                      }`}
+                    >
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className='flex-1 min-w-0'>
+                      <p className={`text-sm font-semibold truncate ${dropdownText}`}>
+                        {user.name}
+                      </p>
+                      <p className={`text-xs truncate ${dropdownSubtext}`}>
+                        {user.email}
+                      </p>
+                      {user.role === 'admin' && (
+                        <span className='mt-0.5 inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-1.5 py-0.5 text-[10px] font-medium text-purple-400'>
+                          <Shield className='h-2.5 w-2.5' />
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* User menu items */}
                 {dashboardLink && (
                   <Link
                     href={dashboardLink}
                     onClick={() => setMobileOpen(false)}
-                    className={`text-sm font-medium ${blueAccent}`}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${dropdownText} ${dropdownItemHover}`}
                   >
+                    <LayoutDashboard className='h-4 w-4 opacity-60' />
                     Dashboard
                   </Link>
                 )}
                 <Link
-                  href={
-                    user.role === 'admin'
-                      ? '/admin/dashboard'
-                      : `/${user.role}/profil`
-                  }
+                  href={getProfileLink()}
                   onClick={() => setMobileOpen(false)}
-                  className={`text-sm font-medium ${navText}`}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${dropdownText} ${dropdownItemHover}`}
                 >
-                  Profil Saya
+                  <User className='h-4 w-4 opacity-60' />
+                  Profil
                 </Link>
-                {user.role === 'admin' && (
-                  <Link
-                    href={`/admin/profil/${user.id}`}
-                    onClick={() => setMobileOpen(false)}
-                    className={`text-sm font-medium ${navText}`}
-                  >
-                    Admin Profil
-                  </Link>
-                )}
+
+                {/* Logout button */}
                 <button
                   onClick={handleSignOut}
-                  className={`text-left text-sm font-medium ${isDark ? 'text-red-400/80' : 'text-red-500'}`}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'}`}
                 >
+                  <LogOut className='h-4 w-4 opacity-60' />
                   Keluar
                 </button>
               </>

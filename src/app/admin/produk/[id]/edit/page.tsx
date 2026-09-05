@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { buildErrorMessage } from '@/lib/utils';
+import Header from '@/components/Header';
 
 interface Commodity {
   id: string;
@@ -14,6 +15,7 @@ interface Commodity {
 interface Farmer {
   id: string;
   name: string;
+  email: string;
   businessName: string | null;
 }
 
@@ -44,7 +46,7 @@ interface ProductData {
 export default function AdminEditProductPage() {
   const router = useRouter();
   const params = useParams();
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -266,34 +268,7 @@ export default function AdminEditProductPage() {
 
   return (
     <div className='min-h-screen dark:bg-[#0d1410] bg-slate-50'>
-      <header className='dark:border-white/10 dark:bg-white/[0.03] border-b border-black/10 bg-white'>
-        <div className='mx-auto flex max-w-7xl items-center justify-between px-6 py-4'>
-          <Link href='/' className='text-xl font-bold dark:text-green-400 text-green-600'>
-            PanenLangsung
-          </Link>
-          <div className='flex items-center gap-4'>
-            <Link
-              href='/admin/dashboard'
-              className='text-sm dark:text-green-400 text-green-600 hover:underline'
-            >
-              Dashboard
-            </Link>
-            <span className='rounded dark:bg-red-500/15 dark:text-red-400 bg-red-100 px-2 py-1 text-xs font-semibold text-red-700'>
-              Admin
-            </span>
-            <span className='text-sm dark:text-[#8b9e93] text-slate-500'>{user?.name}</span>
-            <button
-              onClick={async () => {
-                await signOut();
-                router.push('/masuk');
-              }}
-              className='text-sm text-red-600 hover:underline dark:text-red-400'
-            >
-              Keluar
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className='mx-auto max-w-3xl px-6 py-8'>
         <Link
@@ -326,9 +301,9 @@ export default function AdminEditProductPage() {
           {photos.length > 0 && (
             <div className='mb-4 grid grid-cols-5 gap-2'>
               {photos.map((photo) => (
-                  <div key={photo.id} className='group relative'>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                <div key={photo.id} className='group relative'>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={photo.fileUrl}
                     alt=''
                     className={`h-24 w-full rounded-lg object-cover ${photo.isPrimary ? 'ring-2 ring-green-500' : ''}`}
@@ -433,7 +408,7 @@ export default function AdminEditProductPage() {
                 <option value=''>Pilih Petani</option>
                 {farmers.map((f) => (
                   <option key={f.id} value={f.id}>
-                    {f.businessName || f.name}
+                    {f.businessName || f.name} ({f.email})
                   </option>
                 ))}
               </select>
@@ -574,7 +549,10 @@ export default function AdminEditProductPage() {
                   }
                   className='rounded'
                 />
-                <label htmlFor='isPreorder' className='text-sm dark:text-gray-300 text-slate-700'>
+                <label
+                  htmlFor='isPreorder'
+                  className='text-sm dark:text-gray-300 text-slate-700'
+                >
                   Pre-Order
                 </label>
               </div>

@@ -6,6 +6,7 @@ export interface AuthenticatedUser {
   id: string;
   email: string;
   role: string;
+  verificationStatus: string;
 }
 
 export async function withAuth(
@@ -28,12 +29,19 @@ export async function withAuth(
 
     const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
-      select: { id: true, email: true, role: true },
+      select: { id: true, email: true, role: true, verificationStatus: true },
     });
 
     if (!dbUser) {
       return NextResponse.json(
         { error: "Forbidden", message: "User tidak ditemukan di database" },
+        { status: 403 }
+      );
+    }
+
+    if (dbUser.verificationStatus === "rejected" && dbUser.role !== "admin") {
+      return NextResponse.json(
+        { error: "Forbidden", message: "Akun Anda telah ditolak oleh admin. Silakan hubungi admin untuk informasi lebih lanjut." },
         { status: 403 }
       );
     }

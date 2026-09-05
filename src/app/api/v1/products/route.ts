@@ -40,7 +40,7 @@ export async function GET(request: Request) {
       prisma.product.findMany({
         where,
         include: {
-          farmer: { select: { id: true, name: true, businessName: true, verificationStatus: true } },
+          farmer: { select: { id: true, name: true, email: true, businessName: true, verificationStatus: true } },
           commodity: { select: { id: true, name: true, category: { select: { name: true } } } },
           photos: { where: { isPrimary: true }, take: 1 },
         },

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { useAuth } from "@/lib/auth-context";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -28,11 +28,13 @@ interface Product {
 
 export default function ProdukDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
 
   const openLightbox = useCallback((index: number) => {
     setSelectedPhoto(index);
@@ -78,6 +80,66 @@ export default function ProdukDetailPage() {
     }
     load();
   }, [params.id]);
+
+  async function handleChat() {
+    if (!user) {
+      router.push("/masuk");
+      return;
+    }
+    if (!product) return;
+
+    setChatLoading(true);
+    try {
+      const res = await fetch("/api/v1/chat/threads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          participantId: product.farmer.id,
+          contextType: "product",
+          contextId: product.id,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const threadId = data.thread?.id || data.thread?.id;
+        router.push(`/${user.role}/chat?thread=${threadId}`);
+      }
+    } catch (error) {
+      console.error("Gagal membuat chat:", error);
+    } finally {
+      setChatLoading(false);
+    }
+  }
+
+  async function handleAjukanPenawaran() {
+    if (!user) {
+      router.push("/masuk");
+      return;
+    }
+    if (!product) return;
+
+    setChatLoading(true);
+    try {
+      const res = await fetch("/api/v1/chat/threads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          participantId: product.farmer.id,
+          contextType: "product",
+          contextId: product.id,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const threadId = data.thread?.id;
+        router.push(`/${user.role}/chat?thread=${threadId}`);
+      }
+    } catch (error) {
+      console.error("Gagal membuat chat:", error);
+    } finally {
+      setChatLoading(false);
+    }
+  }
 
   if (loading) return <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50">Memuat...</div>;
   if (!product) return <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50 dark:text-[#8b9e93] text-slate-500">Produk tidak ditemukan</div>;
@@ -167,12 +229,20 @@ export default function ProdukDetailPage() {
             </div>
 
             <div className="mt-6 flex gap-3">
-              <Link href="/masuk" className="rounded-lg bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800">
-                Chat Penjual
-              </Link>
-              <Link href="/masuk" className="rounded-lg border dark:border-green-500/30 dark:text-green-400 dark:hover:bg-green-500/10 border-green-600 px-6 py-3 font-semibold text-green-600 hover:bg-green-50">
+              <button
+                onClick={handleChat}
+                disabled={chatLoading}
+                className="rounded-lg bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800 disabled:opacity-50"
+              >
+                {chatLoading ? "Memuat..." : "Chat Penjual"}
+              </button>
+              <button
+                onClick={handleAjukanPenawaran}
+                disabled={chatLoading}
+                className="rounded-lg border dark:border-green-500/30 dark:text-green-400 dark:hover:bg-green-500/10 border-green-600 px-6 py-3 font-semibold text-green-600 hover:bg-green-50 disabled:opacity-50"
+              >
                 Ajukan Penawaran
-              </Link>
+              </button>
             </div>
           </div>
         </div>

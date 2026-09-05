@@ -10,13 +10,18 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered");
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ email: "", password: "" });
 
   useEffect(() => {
     if (!authLoading && user) {
+      if (user.verificationStatus === "rejected") {
+        setError("Akun Anda telah ditolak oleh admin. Silakan hubungi admin untuk informasi lebih lanjut.");
+        signOut();
+        return;
+      }
       redirectByRole(user.role);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,7 +68,7 @@ function LoginForm() {
     );
   }
 
-  if (user) return null;
+  if (user && user.verificationStatus !== "rejected") return null;
 
   return (
     <div className="w-full max-w-md">

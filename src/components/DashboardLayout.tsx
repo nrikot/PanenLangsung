@@ -24,7 +24,7 @@ export default function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
 
   useEffect(() => {
     if (!authLoading && (!user || (requiredRole && user.role !== requiredRole))) {
@@ -36,6 +36,27 @@ export default function DashboardLayout({
     return (
       <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}>
         Memuat...
+      </div>
+    );
+  }
+
+  if (user.verificationStatus === "rejected") {
+    return (
+      <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50 px-4">
+        <div className="w-full max-w-md rounded-xl border dark:bg-white/[0.03] dark:border-white/10 bg-white border-black/10 p-8 shadow-sm text-center">
+          <div className="mb-4 text-5xl">⛔</div>
+          <h1 className="mb-2 text-xl font-bold dark:text-red-400 text-red-600">Akun Ditolak</h1>
+          <p className="mb-6 text-sm dark:text-gray-300 text-slate-600">
+            Akun Anda telah ditolak oleh admin. Anda tidak dapat mengakses sistem ini.
+            Silakan hubungi admin untuk informasi lebih lanjut.
+          </p>
+          <button
+            onClick={() => signOut()}
+            className="rounded-lg bg-red-600 px-6 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Keluar
+          </button>
+        </div>
       </div>
     );
   }

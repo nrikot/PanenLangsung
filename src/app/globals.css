@@ -87,11 +87,11 @@
   }
 
   .dark {
-    --background: 13 20 16;
+    --background: 140 20% 7%;
     --foreground: 150 5% 90%;
-    --muted: 13 20 16;
+    --muted: 140 20% 7%;
     --muted-foreground: 155 8% 58%;
-    --card: 13 20 16;
+    --card: 140 20% 7%;
     --card-foreground: 150 5% 90%;
     --border: 150 10% 15%;
     --primary: 142 72% 40%;
@@ -165,4 +165,18 @@
 .hero-topo-pattern {
   background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 200 Q100 160 200 200 T400 200' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 180 Q100 140 200 180 T400 180' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 220 Q100 180 200 220 T400 220' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 160 Q100 120 200 160 T400 160' fill='none' stroke='%23ffffff' stroke-width='0.4'/%3E%3Cpath d='M0 240 Q100 200 200 240 T400 240' fill='none' stroke='%23ffffff' stroke-width='0.4'/%3E%3Cpath d='M0 140 Q100 100 200 140 T400 140' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 260 Q100 220 200 260 T400 260' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 120 Q100 80 200 120 T400 120' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 280 Q100 240 200 280 T400 280' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3C/svg%3E");
   background-size: 400px 400px;
+}
+
+/* Fix dark mode native select dropdown styling */
+@media (prefers-color-scheme: dark) {
+  select, select option {
+    color-scheme: dark;
+  }
+}
+.dark select, .dark select option {
+  color-scheme: dark;
+}
+.dark select option {
+  background-color: #1a2414;
+  color: #e2e8e4;
 }

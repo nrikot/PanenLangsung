@@ -1,5 +1,6 @@
 "use client";
-import DashboardLayout, { StubCard } from "@/components/DashboardLayout";
+import DashboardLayout from "@/components/DashboardLayout";
+import ChatInterface from "@/components/ChatInterface";
 
 export default function ChatPetaniPage() {
   return (
@@ -9,7 +10,7 @@ export default function ChatPetaniPage() {
       subtitle="Inbox negosiasi"
       backHref="/petani/dashboard"
     >
-      <StubCard />
+      <ChatInterface />
     </DashboardLayout>
   );
 }

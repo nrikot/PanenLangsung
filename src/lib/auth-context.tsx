@@ -9,6 +9,7 @@ interface AuthUser {
   email: string;
   role: string;
   name: string;
+  verificationStatus: string;
 }
 
 interface AuthContextType {
@@ -84,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: u.email,
           role: u.role,
           name: u.name,
+          verificationStatus: u.verificationStatus ?? "pending",
         };
         setUser(authUser);
         cacheUser(authUser);

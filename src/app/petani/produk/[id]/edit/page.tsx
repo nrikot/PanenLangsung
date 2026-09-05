@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { buildErrorMessage } from "@/lib/utils";
+import Header from "@/components/Header";
 
 interface Commodity {
   id: string;
@@ -31,7 +32,7 @@ interface ProductData {
 export default function EditProdukPage() {
   const router = useRouter();
   const params = useParams();
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -160,15 +161,7 @@ export default function EditProdukPage() {
 
   return (
     <div className="min-h-screen dark:bg-[#0d1410] bg-slate-50">
-      <header className="dark:border-white/10 dark:bg-white/[0.03] border-b border-black/10 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link href="/" className="text-xl font-bold dark:text-green-400 text-green-600">PanenLangsung</Link>
-          <div className="flex items-center gap-4">
-            <Link href="/petani/dashboard" className="text-sm dark:text-green-400 text-green-600 hover:underline">Dashboard</Link>
-            <button onClick={async () => { await signOut(); router.push('/masuk'); }} className="text-sm dark:text-red-400 text-red-600 hover:underline">Keluar</button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="mx-auto max-w-2xl px-6 py-8">
         <Link href="/petani/produk" className="mb-4 inline-block text-sm dark:text-green-400 text-green-600 hover:underline">&larr; Kembali</Link>
