@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Bell } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Notification {
   id: string;
@@ -17,6 +18,7 @@ export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations();
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -83,11 +85,11 @@ export default function NotificationBell() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return "Baru saja";
-    if (diffMins < 60) return `${diffMins}m lalu`;
-    if (diffHours < 24) return `${diffHours}j lalu`;
-    if (diffDays < 7) return `${diffDays}h lalu`;
-    return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+    if (diffMins < 1) return t("time.justNow");
+    if (diffMins < 60) return t("time.minutesAgo", { n: diffMins });
+    if (diffHours < 24) return t("time.hoursAgo", { n: diffHours });
+    if (diffDays < 7) return t("time.daysAgo", { n: diffDays });
+    return date.toLocaleDateString(undefined, { day: "numeric", month: "short" });
   };
 
   return (
@@ -114,11 +116,11 @@ export default function NotificationBell() {
         >
           <div className="flex items-center justify-between border-b p-3" style={{ borderColor: "var(--feature-card-border)" }}>
             <h3 className="text-sm font-semibold" style={{ color: "var(--feature-heading)" }}>
-              Notifikasi
+              {t("notifications.title")}
             </h3>
             {unreadCount > 0 && (
               <span className="text-xs" style={{ color: "var(--feature-sub)" }}>
-                {unreadCount} belum dibaca
+                {unreadCount} {t("notifications.unread")}
               </span>
             )}
           </div>
@@ -127,7 +129,7 @@ export default function NotificationBell() {
             {notifications.length === 0 ? (
               <div className="p-4 text-center">
                 <p className="text-sm" style={{ color: "var(--feature-sub)" }}>
-                  Tidak ada notifikasi
+                  {t("notifications.noNotifications")}
                 </p>
               </div>
             ) : (
@@ -176,7 +178,7 @@ export default function NotificationBell() {
               className="w-full rounded-lg py-1.5 text-center text-xs font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5"
               style={{ color: "var(--hero-dot)" }}
             >
-              Tutup
+              {t("common.close")}
             </button>
           </div>
         </div>

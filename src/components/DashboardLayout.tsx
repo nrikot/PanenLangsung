@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import Header from "@/components/Header";
 
@@ -25,6 +26,7 @@ export default function DashboardLayout({
 }: DashboardLayoutProps) {
   const router = useRouter();
   const { user, loading: authLoading, signOut } = useAuth();
+  const t = useTranslations();
 
   useEffect(() => {
     if (!authLoading && (!user || (requiredRole && user.role !== requiredRole))) {
@@ -35,7 +37,7 @@ export default function DashboardLayout({
   if (authLoading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}>
-        Memuat...
+        {t("common.loading")}
       </div>
     );
   }
@@ -45,16 +47,15 @@ export default function DashboardLayout({
       <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50 px-4">
         <div className="w-full max-w-md rounded-xl border dark:bg-white/[0.03] dark:border-white/10 bg-white border-black/10 p-8 shadow-sm text-center">
           <div className="mb-4 text-5xl">⛔</div>
-          <h1 className="mb-2 text-xl font-bold dark:text-red-400 text-red-600">Akun Ditolak</h1>
+          <h1 className="mb-2 text-xl font-bold dark:text-red-400 text-red-600">{t("profile.verificationLabels.rejected")}</h1>
           <p className="mb-6 text-sm dark:text-gray-300 text-slate-600">
-            Akun Anda telah ditolak oleh admin. Anda tidak dapat mengakses sistem ini.
-            Silakan hubungi admin untuk informasi lebih lanjut.
+            {t("common.accountRejected")}
           </p>
           <button
             onClick={() => signOut()}
             className="rounded-lg bg-red-600 px-6 py-2 text-sm font-medium text-white hover:bg-red-700"
           >
-            Keluar
+            {t("common.logout")}
           </button>
         </div>
       </div>
@@ -67,7 +68,7 @@ export default function DashboardLayout({
       <main className="mx-auto max-w-7xl px-5 py-6 sm:px-6 sm:py-8">
         {backHref && (
           <Link href={backHref} className="mb-4 inline-block text-sm font-medium transition-colors" style={{ color: "var(--hero-dot)" }}>
-            &larr; {backLabel || "Dashboard"}
+            &larr; {backLabel || t("common.dashboard")}
           </Link>
         )}
         {title && (
@@ -102,13 +103,14 @@ export function DashCard({ title, desc, href }: { title: string; desc: string; h
 }
 
 export function StubCard({ message }: { message?: string }) {
+  const t = useTranslations();
   return (
     <div
       className="rounded-xl border p-12 text-center shadow-sm"
       style={{ borderColor: "var(--feature-card-border)", backgroundColor: "var(--feature-card-bg)" }}
     >
       <p className="text-base" style={{ color: "var(--feature-sub)" }}>
-        {message || "Halaman ini akan segera hadir."}
+        {message || t("common.comingSoon")}
       </p>
     </div>
   );

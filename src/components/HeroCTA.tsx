@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import { ArrowRight } from "lucide-react";
 
 export default function HeroCTA() {
   const { user, loading } = useAuth();
+  const t = useTranslations();
 
   function getHref() {
     if (loading) return "/daftar";
@@ -19,8 +21,8 @@ export default function HeroCTA() {
   }
 
   function getLabel() {
-    if (loading || !user) return "Mulai Sekarang";
-    return "Dashboard";
+    if (loading || !user) return t("home.startNow");
+    return t("common.dashboard");
   }
 
   return (
@@ -40,7 +42,7 @@ export default function HeroCTA() {
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--btn-outline-hover-bg)")}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
       >
-        Lihat Katalog
+        {t("home.viewCatalog")}
       </Link>
     </div>
   );

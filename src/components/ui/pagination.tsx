@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav role="navigation" aria-label="Pagination" className={cn("mx-auto flex w-full justify-center", className)} {...props} />
@@ -34,6 +35,7 @@ const PaginationLink = ({ isActive, className, ...props }: PaginationLinkProps) 
 
 const PaginationPrevious = ({ className, ...props }: React.ComponentProps<"a">) => {
   const disabled = props["aria-disabled"] === true || props["aria-disabled"] === "true";
+  const t = useTranslations("pagination");
   return (
     <a
       className={cn(
@@ -46,13 +48,14 @@ const PaginationPrevious = ({ className, ...props }: React.ComponentProps<"a">) 
       {...props}
     >
       <ChevronLeft className="h-4 w-4" />
-      <span>Sebelumnya</span>
+      <span>{t("previous")}</span>
     </a>
   );
 };
 
 const PaginationNext = ({ className, ...props }: React.ComponentProps<"a">) => {
   const disabled = props["aria-disabled"] === true || props["aria-disabled"] === "true";
+  const t = useTranslations("pagination");
   return (
     <a
       className={cn(
@@ -64,17 +67,20 @@ const PaginationNext = ({ className, ...props }: React.ComponentProps<"a">) => {
       )}
       {...props}
     >
-      <span>Berikutnya</span>
+      <span>{t("next")}</span>
       <ChevronRight className="h-4 w-4" />
     </a>
   );
 };
 
-const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<"span">) => (
-  <span className={cn("flex h-9 w-9 items-center justify-center dark:text-[#8b9e93] text-slate-400", className)} {...props}>
-    <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">Lainnya</span>
-  </span>
-);
+const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<"span">) => {
+  const t = useTranslations("pagination");
+  return (
+    <span className={cn("flex h-9 w-9 items-center justify-center dark:text-[#8b9e93] text-slate-400", className)} {...props}>
+      <MoreHorizontal className="h-4 w-4" />
+      <span className="sr-only">{t("ellipsis")}</span>
+    </span>
+  );
+};
 
 export { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis };

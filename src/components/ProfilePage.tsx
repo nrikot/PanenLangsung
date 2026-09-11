@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import Header from "@/components/Header";
 
@@ -44,6 +45,7 @@ export default function ProfilPage() {
     businessType: "",
     groupFarmerNumber: "",
   });
+  const t = useTranslations();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -74,7 +76,7 @@ export default function ProfilPage() {
         });
       }
     } catch {
-      console.error("Gagal memuat profil");
+      console.error(t("profile.loadError"));
     } finally {
       setLoading(false);
     }
@@ -91,7 +93,7 @@ export default function ProfilPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMsg("Profil berhasil disimpan");
+        setMsg(t("profile.profileSaved"));
         setEditing(false);
         setProfile(data.user);
         await refreshUser();
@@ -100,13 +102,13 @@ export default function ProfilPage() {
         const errs = data.details;
         if (errs) {
           const first = Object.values(errs)[0];
-          setMsg(Array.isArray(first) ? first[0] : "Gagal menyimpan");
+          setMsg(Array.isArray(first) ? first[0] : t("profile.saveFailed"));
         } else {
-          setMsg(data.error || "Gagal menyimpan");
+          setMsg(data.error || t("profile.saveFailed"));
         }
       }
     } catch {
-      setMsg("Gagal menyimpan profil");
+      setMsg(t("profile.saveError"));
     } finally {
       setSaving(false);
     }
@@ -115,26 +117,26 @@ export default function ProfilPage() {
   const dashboardHref = user?.role === "admin" ? "/admin/dashboard" : user?.role === "petani" ? "/petani/dashboard" : "/pembeli/dashboard";
   const isPetani = user?.role === "petani";
 
-  if (authLoading || loading) return <div className="flex min-h-screen items-center justify-center dark:text-gray-400 text-slate-400">Memuat...</div>;
-  if (!profile) return <div className="flex min-h-screen items-center justify-center dark:text-[#8b9e93] text-slate-500">Profil tidak ditemukan</div>;
+  if (authLoading || loading) return <div className="flex min-h-screen items-center justify-center dark:text-gray-400 text-slate-400">{t("common.loading")}</div>;
+  if (!profile) return <div className="flex min-h-screen items-center justify-center dark:text-[#8b9e93] text-slate-500">{t("profile.profileNotFound")}</div>;
 
   return (
     <div className="min-h-screen dark:bg-[#0d1410] bg-slate-50">
       <Header />
 
       <main className="mx-auto max-w-3xl px-6 py-8">
-        <Link href={dashboardHref} className="mb-4 inline-block text-sm dark:text-green-400 text-green-600 hover:underline">&larr; Dashboard</Link>
+        <Link href={dashboardHref} className="mb-4 inline-block text-sm dark:text-green-400 text-green-600 hover:underline">&larr; {t("common.dashboard")}</Link>
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold dark:text-gray-100 text-slate-900">Profil Saya</h1>
+          <h1 className="text-2xl font-bold dark:text-gray-100 text-slate-900">{t("profile.myProfile")}</h1>
           {!editing && (
             <button onClick={() => setEditing(true)} className="rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800">
-              Edit Profil
+              {t("profile.editProfile")}
             </button>
           )}
         </div>
 
         {msg && (
-          <div className={`mt-4 rounded-lg px-4 py-2 text-sm ${msg.includes("berhasil") ? "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400" : "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400"}`}>
+          <div className={`mt-4 rounded-lg px-4 py-2 text-sm ${msg.includes("berhasil") || msg.includes("saved") ? "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400" : "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400"}`}>
             {msg}
           </div>
         )}
@@ -142,48 +144,48 @@ export default function ProfilPage() {
         {/* Profile Info */}
         <div className="mt-6 space-y-6">
           {/* Basic Info */}
-          <Section title="Informasi Dasar">
-            <InfoRow label="Email" value={profile.email} />
-            <InfoRow label="Role" value={profile.role === "petani" ? "Petani" : profile.role === "pembeli" ? "Pembeli" : "Admin"} />
-            <InfoRow label="Status Verifikasi" value={profile.verificationStatus === "verified" ? "Terverifikasi" : profile.verificationStatus === "rejected" ? "Ditolak" : "Menunggu"} badge={profile.verificationStatus === "verified" ? "green" : profile.verificationStatus === "rejected" ? "red" : "yellow"} />
-            <InfoRow label="Terdaftar Sejak" value={new Date(profile.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} />
+          <Section title={t("profile.basicInfo")}>
+            <InfoRow label={t("profile.email")} value={profile.email} />
+            <InfoRow label={t("profile.role")} value={profile.role === "petani" ? t("profile.roleLabels.petani") : profile.role === "pembeli" ? t("profile.roleLabels.pembeli") : t("profile.roleLabels.admin")} />
+            <InfoRow label={t("profile.verificationStatus")} value={profile.verificationStatus === "verified" ? t("profile.verificationLabels.verified") : profile.verificationStatus === "rejected" ? t("profile.verificationLabels.rejected") : t("profile.verificationLabels.pending")} badge={profile.verificationStatus === "verified" ? "green" : profile.verificationStatus === "rejected" ? "red" : "yellow"} />
+            <InfoRow label={t("profile.registeredSince")} value={new Date(profile.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })} />
           </Section>
 
           {/* Editable Info */}
-          <Section title="Informasi Pribadi">
+          <Section title={t("profile.personalInfo")}>
             {editing ? (
               <div className="space-y-4">
-                <Field label="Nama Lengkap" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-                <Field label="Nomor Telepon" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-                <Field label="Alamat" value={form.address} onChange={(v) => setForm({ ...form, address: v })} multiline />
+                <Field label={t("profile.fullName")} value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+                <Field label={t("profile.phone")} value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+                <Field label={t("profile.address")} value={form.address} onChange={(v) => setForm({ ...form, address: v })} multiline />
               </div>
             ) : (
               <>
-                <InfoRow label="Nama" value={profile.name} />
-                <InfoRow label="Telepon" value={profile.phone} />
-                <InfoRow label="Alamat" value={profile.address} />
+                <InfoRow label={t("common.name")} value={profile.name} />
+                <InfoRow label={t("common.phone")} value={profile.phone} />
+                <InfoRow label={t("common.address")} value={profile.address} />
               </>
             )}
           </Section>
 
           {/* Business Info (for petani) */}
           {isPetani && (
-            <Section title="Informasi Usaha">
+            <Section title={t("profile.businessInfo")}>
               {editing ? (
                 <div className="space-y-4">
-                  <Field label="Nama Usaha" value={form.businessName} onChange={(v) => setForm({ ...form, businessName: v })} />
-                  <Field label="NPWP" value={form.npwp} onChange={(v) => setForm({ ...form, npwp: v })} />
-                  <Field label="NIB" value={form.nib} onChange={(v) => setForm({ ...form, nib: v })} />
-                  <Field label="Jenis Usaha" value={form.businessType} onChange={(v) => setForm({ ...form, businessType: v })} />
-                  <Field label="Nomor Kelompok Tani" value={form.groupFarmerNumber} onChange={(v) => setForm({ ...form, groupFarmerNumber: v })} />
+                  <Field label={t("profile.businessName")} value={form.businessName} onChange={(v) => setForm({ ...form, businessName: v })} />
+                  <Field label={t("profile.npwp")} value={form.npwp} onChange={(v) => setForm({ ...form, npwp: v })} />
+                  <Field label={t("profile.nib")} value={form.nib} onChange={(v) => setForm({ ...form, nib: v })} />
+                  <Field label={t("profile.businessType")} value={form.businessType} onChange={(v) => setForm({ ...form, businessType: v })} />
+                  <Field label={t("profile.farmerGroupNumber")} value={form.groupFarmerNumber} onChange={(v) => setForm({ ...form, groupFarmerNumber: v })} />
                 </div>
               ) : (
                 <>
-                  <InfoRow label="Nama Usaha" value={profile.businessName || "-"} />
-                  <InfoRow label="NPWP" value={profile.npwp || "-"} />
-                  <InfoRow label="NIB" value={profile.nib || "-"} />
-                  <InfoRow label="Jenis Usaha" value={profile.businessType || "-"} />
-                  <InfoRow label="Nomor Kelompok Tani" value={profile.groupFarmerNumber || "-"} />
+                  <InfoRow label={t("profile.businessName")} value={profile.businessName || "-"} />
+                  <InfoRow label={t("profile.npwp")} value={profile.npwp || "-"} />
+                  <InfoRow label={t("profile.nib")} value={profile.nib || "-"} />
+                  <InfoRow label={t("profile.businessType")} value={profile.businessType || "-"} />
+                  <InfoRow label={t("profile.farmerGroupNumber")} value={profile.groupFarmerNumber || "-"} />
                 </>
               )}
             </Section>
@@ -191,7 +193,7 @@ export default function ProfilPage() {
 
           {/* Commodities */}
           {isPetani && profile.userCommodities.length > 0 && (
-            <Section title="Komoditas">
+            <Section title={t("profile.commodities")}>
               <div className="flex flex-wrap gap-2">
                 {profile.userCommodities.map((uc) => (
                   <span key={uc.commodity.id} className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700 dark:bg-green-500/15 dark:text-green-400">
@@ -206,10 +208,10 @@ export default function ProfilPage() {
           {editing && (
             <div className="flex gap-3">
               <button onClick={handleSave} disabled={saving} className="rounded-lg bg-green-700 px-6 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50">
-                {saving ? "Menyimpan..." : "Simpan Perubahan"}
+                {saving ? t("profile.saving") : t("profile.saveChanges")}
               </button>
               <button onClick={() => { setEditing(false); setForm({ name: profile.name, phone: profile.phone, address: profile.address, businessName: profile.businessName || "", npwp: profile.npwp || "", nib: profile.nib || "", businessType: profile.businessType || "", groupFarmerNumber: profile.groupFarmerNumber || "" }); setMsg(""); }} className="rounded-lg border border-gray-300 px-6 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5">
-                Batal
+                {t("profile.cancel")}
               </button>
             </div>
           )}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import { Send, ArrowLeft, MessageSquare } from "lucide-react";
 
@@ -53,6 +54,7 @@ export default function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const initialThreadSelected = useRef(false);
+  const t = useTranslations();
 
   const fetchThreads = useCallback(async () => {
     try {
@@ -97,7 +99,6 @@ export default function ChatInterface() {
   useEffect(() => {
     if (selectedThread) {
       fetchMessages(selectedThread.id);
-      // Poll for new messages every 3 seconds
       pollingRef.current = setInterval(() => {
         fetchMessages(selectedThread.id);
       }, 3000);
@@ -127,7 +128,7 @@ export default function ChatInterface() {
         body.type = "counter_offer";
         body.offerPrice = parseFloat(offerPrice);
         body.offerQuantity = parseFloat(offerQuantity);
-        body.content = `Penawaran: Rp ${parseFloat(offerPrice).toLocaleString("id-ID")} x ${offerQuantity}`;
+        body.content = `${t("chat.offer")}: Rp ${parseFloat(offerPrice).toLocaleString()} x ${offerQuantity}`;
       }
 
       const res = await fetch(`/api/v1/chat/threads/${selectedThread.id}/messages`, {
@@ -181,18 +182,18 @@ export default function ChatInterface() {
   };
 
   const formatCurrency = (amount: number) =>
-    `Rp ${amount.toLocaleString("id-ID")}`;
+    `Rp ${amount.toLocaleString()}`;
 
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-sm" style={{ color: "var(--feature-sub)" }}>
-          Memuat chat...
+          {t("chat.loading")}
         </div>
       </div>
     );
@@ -209,7 +210,7 @@ export default function ChatInterface() {
           >
             <MessageSquare className="mx-auto mb-3 h-10 w-10 opacity-30" style={{ color: "var(--feature-sub)" }} />
             <p className="text-sm" style={{ color: "var(--feature-sub)" }}>
-              Belum ada percakapan. Mulai chat dari produk, lelang, atau RFQ.
+              {t("chat.noConversations")}
             </p>
           </div>
         ) : (
@@ -233,21 +234,15 @@ export default function ChatInterface() {
                         color: "white",
                       }}
                     >
-                      {thread.contextType === "product"
-                        ? "Produk"
-                        : thread.contextType === "auction"
-                        ? "Lelang"
-                        : thread.contextType === "rfq"
-                        ? "RFQ"
-                        : "Order"}
+                      {t(`chat.contextTypes.${thread.contextType}`)}
                     </span>
                   </div>
                   <p className="mt-1 text-xs truncate" style={{ color: "var(--feature-sub)" }}>
                     {thread.lastMessage
                       ? thread.lastMessage.type === "counter_offer"
-                        ? `💰 Penawaran: ${formatCurrency(thread.lastMessage.offerPrice || 0)}`
+                        ? `💰 ${t("chat.offer")}: ${formatCurrency(thread.lastMessage.offerPrice || 0)}`
                         : thread.lastMessage.content
-                      : "Belum ada pesan"}
+                      : ""}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1 ml-2">
@@ -293,13 +288,7 @@ export default function ChatInterface() {
             {selectedThread.otherParticipant.businessName || selectedThread.otherParticipant.name}
           </p>
           <p className="text-xs" style={{ color: "var(--feature-sub)" }}>
-            {selectedThread.contextType === "product"
-              ? "Chat Produk"
-              : selectedThread.contextType === "auction"
-              ? "Chat Lelang"
-              : selectedThread.contextType === "rfq"
-              ? "Chat RFQ"
-              : "Chat Order"}
+            {t(`chat.${selectedThread.contextType}Chat`)}
           </p>
         </div>
       </div>
@@ -327,12 +316,12 @@ export default function ChatInterface() {
               >
                 {msg.type === "counter_offer" ? (
                   <div>
-                    <p className="text-xs font-semibold mb-1 opacity-80">💰 Penawaran</p>
+                    <p className="text-xs font-semibold mb-1 opacity-80">💰 {t("chat.offer")}</p>
                     <p className="text-sm font-bold">
                       {formatCurrency(msg.offerPrice || 0)} x {msg.offerQuantity}
                     </p>
                     <p className="text-xs mt-1 opacity-80">
-                      Total: {formatCurrency((msg.offerPrice || 0) * (msg.offerQuantity || 0))}
+                      {t("chat.total")}: {formatCurrency((msg.offerPrice || 0) * (msg.offerQuantity || 0))}
                     </p>
                     {msg.offerStatus === "pending" && !isOwn && (
                       <div className="flex gap-2 mt-2">
@@ -340,21 +329,21 @@ export default function ChatInterface() {
                           onClick={() => handleAcceptOffer(msg.id)}
                           className="rounded-lg bg-white/20 px-3 py-1 text-xs font-medium hover:bg-white/30"
                         >
-                          Terima
+                          {t("chat.accept")}
                         </button>
                         <button
                           onClick={() => handleDeclineOffer(msg.id)}
                           className="rounded-lg bg-red-500/20 px-3 py-1 text-xs font-medium hover:bg-red-500/30"
                         >
-                          Tolak
+                          {t("chat.decline")}
                         </button>
                       </div>
                     )}
                     {msg.offerStatus === "accepted" && (
-                      <p className="text-xs mt-1 font-semibold text-green-300">✓ Diterima</p>
+                      <p className="text-xs mt-1 font-semibold text-green-300">✓ {t("chat.accepted")}</p>
                     )}
                     {msg.offerStatus === "declined" && (
-                      <p className="text-xs mt-1 font-semibold text-red-300">✗ Ditolak</p>
+                      <p className="text-xs mt-1 font-semibold text-red-300">✗ {t("chat.declined")}</p>
                     )}
                   </div>
                 ) : (
@@ -378,12 +367,12 @@ export default function ChatInterface() {
             style={{ borderColor: "var(--feature-card-border)", backgroundColor: "var(--feature-card-bg)" }}
           >
             <p className="text-xs font-semibold mb-2" style={{ color: "var(--feature-heading)" }}>
-              Formulir Penawaran
+              {t("chat.offerForm")}
             </p>
             <div className="flex gap-2">
               <input
                 type="number"
-                placeholder="Harga per satuan"
+                placeholder={t("chat.pricePerUnit")}
                 value={offerPrice}
                 onChange={(e) => setOfferPrice(e.target.value)}
                 className="flex-1 rounded-lg border px-3 py-2 text-sm"
@@ -391,7 +380,7 @@ export default function ChatInterface() {
               />
               <input
                 type="number"
-                placeholder="Kuantitas"
+                placeholder={t("chat.quantity")}
                 value={offerQuantity}
                 onChange={(e) => setOfferQuantity(e.target.value)}
                 className="flex-1 rounded-lg border px-3 py-2 text-sm"
@@ -400,7 +389,7 @@ export default function ChatInterface() {
             </div>
             {offerPrice && offerQuantity && (
               <p className="mt-2 text-xs font-medium" style={{ color: "var(--hero-dot)" }}>
-                Total: {formatCurrency(parseFloat(offerPrice) * parseFloat(offerQuantity))}
+                {t("chat.total")}: {formatCurrency(parseFloat(offerPrice) * parseFloat(offerQuantity))}
               </p>
             )}
           </div>
@@ -417,7 +406,7 @@ export default function ChatInterface() {
           </button>
           <input
             type="text"
-            placeholder="Ketik pesan..."
+            placeholder={t("chat.typeMessage")}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => {

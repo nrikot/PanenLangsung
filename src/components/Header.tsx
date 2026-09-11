@@ -3,16 +3,19 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/lib/theme-context';
 import ThemeToggle from '@/components/ThemeToggle';
 import NotificationBell from '@/components/NotificationBell';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Menu, X, User, LayoutDashboard, LogOut, Shield } from 'lucide-react';
 
 export default function Header() {
   const { user, loading, signOut } = useAuth();
   const { theme } = useTheme();
   const router = useRouter();
+  const t = useTranslations();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -101,18 +104,19 @@ export default function Header() {
             href='/produk'
             className={`text-sm transition-colors ${navText}`}
           >
-            Produk
+            {t('nav.products')}
           </Link>
           <Link
             href='/lelang'
             className={`text-sm transition-colors ${navText}`}
           >
-            Lelang
+            {t('nav.auctions')}
           </Link>
           <Link href='/rfq' className={`text-sm transition-colors ${navText}`}>
-            RFQ
+            {t('nav.rfq')}
           </Link>
 
+          <LanguageSwitcher />
           <ThemeToggle />
 
           {loading ? null : user && <NotificationBell />}
@@ -165,7 +169,7 @@ export default function Header() {
                     {user.role === 'admin' && (
                       <span className='mt-1 inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-400'>
                         <Shield className='h-3 w-3' />
-                        Admin
+                        {t('nav.admin')}
                       </span>
                     )}
                   </div>
@@ -179,7 +183,7 @@ export default function Header() {
                         className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${dropdownText} ${dropdownItemHover}`}
                       >
                         <LayoutDashboard className='h-4 w-4 opacity-60' />
-                        Dashboard
+                        {t('common.dashboard')}
                       </Link>
                     )}
                     <Link
@@ -188,7 +192,7 @@ export default function Header() {
                       className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${dropdownText} ${dropdownItemHover}`}
                     >
                       <User className='h-4 w-4 opacity-60' />
-                      Profil
+                      {t('common.profile')}
                     </Link>
                   </div>
 
@@ -199,7 +203,7 @@ export default function Header() {
                       className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'}`}
                     >
                       <LogOut className='h-4 w-4 opacity-60' />
-                      Keluar
+                      {t('common.logout')}
                     </button>
                   </div>
                 </div>
@@ -215,13 +219,13 @@ export default function Header() {
                     : 'border-black/12 text-slate-600 hover:border-black/10 hover:bg-black/5 hover:text-slate-900'
                 }`}
               >
-                Masuk
+                {t('common.login')}
               </Link>
               <Link
                 href='/daftar'
                 className='rounded-lg bg-[#00aa5b] px-4 py-2 text-sm font-semibold text-white shadow-[0_0_12px_rgba(0,170,91,0.2)] ring-1 ring-[#00aa5b]/20 transition-all hover:bg-[#82de9b] hover:text-black hover:shadow-[0_0_20px_rgba(0,170,91,0.3)]'
               >
-                Daftar
+                {t('common.register')}
               </Link>
             </div>
           )}
@@ -230,6 +234,7 @@ export default function Header() {
         {/* ── mobile right: notification + theme toggle + hamburger ── */}
         <div className='flex items-center gap-2 md:hidden'>
           {loading ? null : user && <NotificationBell />}
+          <LanguageSwitcher />
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -260,21 +265,21 @@ export default function Header() {
               onClick={() => setMobileOpen(false)}
               className={`text-sm font-medium transition-colors ${navText}`}
             >
-              Produk
+              {t('nav.products')}
             </Link>
             <Link
               href='/lelang'
               onClick={() => setMobileOpen(false)}
               className={`text-sm font-medium transition-colors ${navText}`}
             >
-              Lelang
+              {t('nav.auctions')}
             </Link>
             <Link
               href='/rfq'
               onClick={() => setMobileOpen(false)}
               className={`text-sm font-medium transition-colors ${navText}`}
             >
-              RFQ
+              {t('nav.rfq')}
             </Link>
 
             {/* Divider */}
@@ -306,7 +311,7 @@ export default function Header() {
                       {user.role === 'admin' && (
                         <span className='mt-0.5 inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-1.5 py-0.5 text-[10px] font-medium text-purple-400'>
                           <Shield className='h-2.5 w-2.5' />
-                          Admin
+                          {t('nav.admin')}
                         </span>
                       )}
                     </div>
@@ -321,7 +326,7 @@ export default function Header() {
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${dropdownText} ${dropdownItemHover}`}
                   >
                     <LayoutDashboard className='h-4 w-4 opacity-60' />
-                    Dashboard
+                    {t('common.dashboard')}
                   </Link>
                 )}
                 <Link
@@ -330,7 +335,7 @@ export default function Header() {
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${dropdownText} ${dropdownItemHover}`}
                 >
                   <User className='h-4 w-4 opacity-60' />
-                  Profil
+                  {t('common.profile')}
                 </Link>
 
                 {/* Logout button */}
@@ -339,7 +344,7 @@ export default function Header() {
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'}`}
                 >
                   <LogOut className='h-4 w-4 opacity-60' />
-                  Keluar
+                  {t('common.logout')}
                 </button>
               </>
             ) : (
@@ -353,14 +358,14 @@ export default function Header() {
                       : 'border-black/12 text-slate-600 hover:bg-black/5'
                   }`}
                 >
-                  Masuk
+                  {t('common.login')}
                 </Link>
                 <Link
                   href='/daftar'
                   onClick={() => setMobileOpen(false)}
                   className='rounded-lg bg-green-600 px-4 py-2.5 text-center text-sm font-semibold text-white'
                 >
-                  Daftar
+                  {t('common.register')}
                 </Link>
               </div>
             )}
