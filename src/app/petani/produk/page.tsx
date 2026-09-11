@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -24,28 +24,31 @@ export default function PetaniProdukPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== "petani")) {
       router.push("/masuk");
       return;
     }
-    if (user?.id) fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading, router]);
+    if (!user?.id) return;
 
-  async function fetchProducts() {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setLoading(true);
-    try {
-      const res = await fetch(`/api/v1/products?limit=100&farmer_id=${user!.id}`);
-      const data = await res.json();
-      setProducts(data.products || []);
-    } catch {
-      console.error("Gagal memuat produk");
-    } finally {
-      setLoading(false);
-    }
-  }
+    fetch(`/api/v1/products?limit=100&farmer_id=${user.id}`, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => { if (!controller.signal.aborted) setProducts(data.products || []); })
+      .catch((err) => { if (err.name !== "AbortError") console.error("Gagal memuat produk:", err); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+
+    return () => { controller.abort(); };
+  }, [user, authLoading, router]);
 
   async function handleDelete(id: string) {
     if (!confirm("Yakin ingin menghapus produk ini?")) return;
