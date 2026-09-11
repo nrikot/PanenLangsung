@@ -20,6 +20,7 @@ PanenLangsung is a full-stack agricultural marketplace that eliminates middlemen
 | Forms        | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) v4 validation     |
 | State        | [Zustand](https://zustand-demo.pmnd.rs/) 5 + [TanStack Query](https://tanstack.com/query) 5 |
 | Icons        | [Lucide React](https://lucide.dev/)                                                         |
+| i18n         | [next-intl](https://next-intl.dev/) (multi-language: ID, EN, JV)                            |
 | UI Utilities | `clsx` + `tailwind-merge` + `class-variance-authority` (shadcn/ui pattern)                  |
 | Scheduling   | Cron endpoint for automated auction closing                                                 |
 | Runtime      | Node.js 20                                                                                  |
@@ -54,6 +55,7 @@ PanenLangsung is a full-stack agricultural marketplace that eliminates middlemen
 
 ### Platform
 
+- **Multi-language (i18n)** — Bahasa Indonesia (default), English, and Basa Jawa via `next-intl` with locale-prefixed URLs (`/id/...`, `/en/...`, `/jv/...`)
 - **Dark/Light theme** — system-aware toggle with CSS custom properties
 - **Mobile-first responsive** — hamburger navigation, adaptive layouts
 - **Automated auction closing** — cron job auto-activates, closes, and selects winners
@@ -166,6 +168,15 @@ panen-langsung/
 │   └── images/
 │       └── home-indonesia-lineart.svg
 ├── src/
+│   ├── i18n/
+│   │   ├── routing.ts         # Locale config (id, en, jv)
+│   │   ├── request.ts         # Server-side message loading
+│   │   └── navigation.ts      # Typed navigation helpers
+│   ├── messages/
+│   │   ├── id.json            # Bahasa Indonesia translations
+│   │   ├── en.json            # English translations
+│   │   └── jv.json            # Basa Jawa translations
+│   ├── middleware.ts           # Locale detection & redirect
 │   ├── app/
 │   │   ├── api/
 │   │   │   ├── v1/            # REST API endpoints
@@ -178,23 +189,26 @@ panen-langsung/
 │   │   │   │   ├── search/    # Geo-nearby search
 │   │   │   │   └── upload/
 │   │   │   └── cron/          # Scheduled jobs (auction-close)
-│   │   ├── admin/             # Admin dashboard + management pages
-│   │   ├── lelang/            # Public auction listings
-│   │   ├── petani/            # Farmer dashboard + product/auction/RFQ mgmt
-│   │   ├── pembeli/           # Buyer dashboard + auction/RFQ browsing
-│   │   ├── produk/            # Public product catalog + detail pages
-│   │   ├── rfq/               # Public RFQ listings
-│   │   ├── masuk/             # Login page
-│   │   ├── daftar/            # Registration page
-│   │   ├── layout.tsx         # Root layout (ThemeProvider + AuthProvider)
-│   │   ├── page.tsx           # Landing page
-│   │   └── globals.css        # Theme variables + base styles
+│   │   └── [locale]/          # i18n locale segment
+│   │       ├── layout.tsx     # Locale layout (NextIntlClientProvider)
+│   │       ├── page.tsx       # Landing page
+│   │       ├── admin/         # Admin dashboard + management pages
+│   │       ├── lelang/        # Public auction listings
+│   │       ├── petani/        # Farmer dashboard + product/auction/RFQ mgmt
+│   │       ├── pembeli/       # Buyer dashboard + auction/RFQ browsing
+│   │       ├── produk/        # Public product catalog + detail pages
+│   │       ├── rfq/           # Public RFQ listings
+│   │       ├── masuk/         # Login page
+│   │       └── daftar/        # Registration page
 │   ├── components/
 │   │   ├── Header.tsx         # Responsive nav with hamburger menu
 │   │   ├── HeroCTA.tsx        # Auth-aware call-to-action buttons
 │   │   ├── ThemeToggle.tsx    # Dark/light mode toggle
+│   │   ├── LanguageSwitcher.tsx # Language dropdown (ID/EN/JV)
 │   │   ├── DashboardLayout.tsx # Shared dashboard shell
 │   │   ├── ProfilePage.tsx    # Reusable profile component
+│   │   ├── NotificationBell.tsx # Notification dropdown
+│   │   ├── ChatInterface.tsx  # Real-time chat component
 │   │   ├── SupplyChainBg.tsx  # Indonesia map SVG background
 │   │   └── ui/pagination.tsx  # Pagination component
 │   └── lib/
@@ -206,7 +220,7 @@ panen-langsung/
 │       ├── supabase/          # Supabase client setup (browser/server)
 │       └── validations/       # Zod schemas (auth, product, negotiation)
 ├── tailwind.config.ts         # Dark mode + custom theme tokens
-├── next.config.mjs
+├── next.config.mjs            # next-intl plugin config
 ├── tsconfig.json
 └── package.json
 ```
@@ -332,6 +346,34 @@ Key enums: `Role` (petani/pembeli/admin), `OrderStatus` (7 stages from negotiati
 - **Zod v4 strict UUID validation** — rejects non-v4 UUIDs; seed data uses hardcoded IDs that are pre-v4, so seed endpoints bypass Zod validation.
 - **Prisma generator** uses `prisma-client-js` (not `prisma-client`) — Prisma enums are not exported from `@prisma/client`, so string literals are used in Zod schemas.
 - **CSS custom properties for theming** — `.dark` class on `<html>` toggles all colors via `globals.css` variables, enabling instant theme switching without flash.
+- **next-intl with `[locale]` prefix** — all UI routes are under `/[locale]/...` (e.g., `/id/petani/dashboard`, `/en/products`). The middleware detects locale from cookie/browser and redirects. API routes remain outside the locale segment.
+
+---
+
+## Internationalization (i18n)
+
+The app supports three languages via [next-intl](https://next-intl.dev/):
+
+| Code | Language      | Default |
+| ---- | ------------- | ------- |
+| `id` | Bahasa Indonesia | Yes  |
+| `en` | English       |         |
+| `jv` | Basa Jawa     |         |
+
+### How it works
+
+- **Middleware** (`src/middleware.ts`) detects the user's locale from cookie/browser and redirects to the locale-prefixed URL
+- **Route structure**: all pages live under `src/app/[locale]/` (e.g., `/id/products`, `/en/auctions`, `/jv/lelang`)
+- **Translation files**: `src/messages/{id,en,jv}.json` — organized by namespace (`common`, `nav`, `auth`, `home`, `products`, `auctions`, `rfq`, `profile`, `dashboard`, `chat`, `admin`, `status`, `sort`, `time`, `gps`, `pagination`, `language`)
+- **Language switcher**: globe icon dropdown in the Header component — updates the cookie and redirects to the same page in the selected locale
+- **Usage in components**: `const t = useTranslations('namespace');` (client) or `const t = await getTranslations('namespace');` (server)
+- **Date/number formatting**: uses locale-aware `toLocaleDateString()` and `toLocaleString()` without hardcoded locale
+
+### Adding a new language
+
+1. Add the locale to `src/i18n/routing.ts` (`locales` array)
+2. Create `src/messages/{locale}.json` with all translation keys
+3. The language switcher will automatically include the new language
 
 ---
 
@@ -343,7 +385,7 @@ Key enums: `Role` (petani/pembeli/admin), `OrderStatus` (7 stages from negotiati
 - [ ] Transaction history pages
 - [ ] Push notifications
 - [ ] Product reviews and ratings UI
-- [ ] Multi-languages support (English)
+- [x] Multi-language support (ID, EN, JV) via `next-intl`
 - [ ] Image optimization with Next.js `Image` component
 - [ ] E2E and integration tests
 
