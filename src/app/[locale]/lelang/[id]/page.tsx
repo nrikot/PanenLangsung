@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import { useAuth } from '@/lib/auth-context';
 import { buildErrorMessage } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { SkeletonPage, SkeletonDetail } from '@/components/ui/skeleton';
 
 interface Auction {
   id: string;
@@ -156,9 +157,9 @@ export default function LelangDetailPage() {
 
   if (loading)
     return (
-      <div className='flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50 dark:text-[#8b9e93] text-slate-500'>
-        {t('loading')}
-      </div>
+      <SkeletonPage label={t('loading')}>
+        <SkeletonDetail />
+      </SkeletonPage>
     );
   if (error || !auction)
     return (

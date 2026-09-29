@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import { useAuth } from "@/lib/auth-context";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SkeletonPage, SkeletonDetail } from "@/components/ui/skeleton";
 
 interface Product {
   id: string;
@@ -143,7 +144,12 @@ export default function ProdukDetailPage() {
     }
   }
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50">{t("loading")}</div>;
+  if (loading)
+    return (
+      <SkeletonPage label={t("loading")}>
+        <SkeletonDetail />
+      </SkeletonPage>
+    );
   if (!product) return <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50 dark:text-[#8b9e93] text-slate-500">{t("notFound")}</div>;
 
   return (

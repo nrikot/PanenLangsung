@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import { useAuth } from '@/lib/auth-context';
 import { buildErrorMessage } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { SkeletonPage, SkeletonDetail } from '@/components/ui/skeleton';
 
 interface Rfq {
   id: string; quantity: number; unit: string; targetPrice: number | null;
@@ -67,7 +68,7 @@ export default function RfqDetailPage() {
     finally { setSubmitting(false); }
   }
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50 dark:text-[#8b9e93] text-slate-500">{t('loading')}</div>;
+  if (loading) return <SkeletonPage label={t('loading')}><SkeletonDetail /></SkeletonPage>;
   if (error || !rfq) return <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50 dark:text-red-400 text-red-600">{error || t('notFound')}</div>;
 
   const myQuote = user?.role === 'petani' ? rfq.quotes.find(q => q.farmer.id === user.id) : null;

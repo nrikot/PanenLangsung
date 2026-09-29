@@ -12,6 +12,7 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from '@/components/ui/pagination';
+import { SkeletonTileGrid } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
 
 interface Auction {
@@ -207,9 +208,7 @@ export default function LelangPublicPage() {
         </div>
 
         {loading ? (
-          <div className='py-20 text-center dark:text-[#8b9e93] text-slate-500'>
-            {t('loadingAuctions')}
-          </div>
+          <SkeletonTileGrid count={6} label={t('loadingAuctions')} />
         ) : auctions.length === 0 ? (
           <div className='py-20 text-center dark:text-[#8b9e93] text-slate-500'>
             {t('noAuctionsFound')}

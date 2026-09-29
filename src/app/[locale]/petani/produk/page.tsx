@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useTranslations } from "next-intl";
 import Header from "@/components/Header";
+import { SkeletonTable } from "@/components/ui/skeleton";
 
 interface Product {
   id: string;
@@ -84,7 +85,7 @@ export default function PetaniProdukPage() {
         </div>
 
         {loading ? (
-          <div className="py-20 text-center dark:text-[#8b9e93] text-slate-500">{t("loadingProducts")}</div>
+          <SkeletonTable rows={10} columns={7} label={t("loadingProducts")} />
         ) : products.length === 0 ? (
           <div className="rounded-xl border dark:bg-white/[0.03] dark:border-white/10 bg-white border-black/10 p-12 text-center shadow-sm">
             <p className="mb-4 text-lg dark:text-[#8b9e93] text-slate-500">{t("noProducts")}</p>

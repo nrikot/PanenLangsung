@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
+import { SkeletonRowList } from "@/components/ui/skeleton";
 
 interface Auction {
   id: string; title: string; quantity: number; unit: string; startPrice: number; reservePrice: number;
@@ -54,7 +55,7 @@ export default function LelangPembeliPage() {
       </div>
 
       {loading ? (
-        <div className="py-12 text-center dark:text-[#8b9e93] text-slate-500">{t("loading")}</div>
+        <SkeletonRowList count={4} label={t("loading")} />
       ) : auctions.length === 0 ? (
         <div className="rounded-xl border dark:bg-white/[0.03] dark:border-white/10 bg-white border-black/10 p-12 text-center shadow-sm">
           <p className="dark:text-gray-400 text-slate-500">{t("noAuctions")}</p>

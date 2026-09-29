@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import Header from "@/components/Header";
+import { Skeleton, SkeletonPage, SkeletonTitle } from "@/components/ui/skeleton";
 
 interface ProfileData {
   id: string;
@@ -117,7 +118,27 @@ export default function ProfilPage() {
   const dashboardHref = user?.role === "admin" ? "/admin/dashboard" : user?.role === "petani" ? "/petani/dashboard" : "/pembeli/dashboard";
   const isPetani = user?.role === "petani";
 
-  if (authLoading || loading) return <div className="flex min-h-screen items-center justify-center dark:text-gray-400 text-slate-400">{t("common.loading")}</div>;
+  if (authLoading || loading)
+    return (
+      <SkeletonPage label={t("common.loading")}>
+        <div className="mx-auto max-w-3xl space-y-6">
+          <SkeletonTitle />
+          <div className="space-y-6">
+            {[0, 1, 2].map(section => (
+              <div key={section} className="skeleton-panel space-y-4 p-6">
+                <Skeleton className="h-4 w-40" />
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between gap-4">
+                    <Skeleton className="h-3 w-32" />
+                    <Skeleton className="h-3 w-44" />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </SkeletonPage>
+    );
   if (!profile) return <div className="flex min-h-screen items-center justify-center dark:text-[#8b9e93] text-slate-500">{t("profile.profileNotFound")}</div>;
 
   return (

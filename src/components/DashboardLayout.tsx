@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import Header from "@/components/Header";
+import { Skeleton, SkeletonRegion, SkeletonTable, SkeletonTitle } from "@/components/ui/skeleton";
 
 interface DashboardLayoutProps {
   requiredRole?: string;
@@ -36,8 +37,15 @@ export default function DashboardLayout({
 
   if (authLoading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}>
-        {t("common.loading")}
+      <div className="min-h-screen" style={{ backgroundColor: "var(--background)" }}>
+        <Header />
+        <main className="mx-auto max-w-7xl px-5 py-6 sm:px-6 sm:py-8">
+          <SkeletonRegion label={t("common.loading")} className="space-y-6">
+            <SkeletonTitle />
+            <Skeleton className="h-40 w-full rounded-xl" />
+            <SkeletonTable rows={6} columns={5} />
+          </SkeletonRegion>
+        </main>
       </div>
     );
   }

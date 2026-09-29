@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis } from '@/components/ui/pagination';
+import { SkeletonTileGrid } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
 
 interface Rfq {
@@ -98,7 +99,7 @@ export default function RfqPublicPage() {
         </div>
 
         {loading ? (
-          <div className="py-20 text-center dark:text-[#8b9e93] text-slate-500">{t('loadingRfqs')}</div>
+          <SkeletonTileGrid count={6} label={t('loadingRfqs')} />
         ) : rfqs.length === 0 ? (
           <div className="py-20 text-center dark:text-[#8b9e93] text-slate-500">{t('noRfqsFound')}</div>
         ) : (

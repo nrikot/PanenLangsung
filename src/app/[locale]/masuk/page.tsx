@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { useTranslations } from "next-intl";
+import { SkeletonAuthCard } from "@/components/ui/skeleton";
 
 function LoginForm() {
   const router = useRouter();
@@ -58,16 +59,7 @@ function LoginForm() {
   }
 
   if (authLoading) {
-    return (
-      <div className="w-full max-w-md">
-        <Link href="/" className="mb-8 block text-center text-2xl font-bold dark:text-green-400 text-green-600">
-          PanenLangsung
-        </Link>
-        <div className="rounded-xl border dark:bg-white/[0.03] dark:border-white/10 bg-white border-black/10 p-8 shadow-sm text-center dark:text-gray-400 text-slate-500">
-          {t("loading")}
-        </div>
-      </div>
-    );
+    return <SkeletonAuthCard label={t("loading")} />;
   }
 
   if (user && user.verificationStatus !== "rejected") return null;
@@ -127,7 +119,7 @@ export default function LoginPage() {
   const t = useTranslations("auth");
   return (
     <div className="flex min-h-screen items-center justify-center dark:bg-[#0d1410] bg-slate-50 px-4">
-      <Suspense fallback={<div>{t("loading")}</div>}>
+      <Suspense fallback={<SkeletonAuthCard label={t("loading")} />}>
         <LoginForm />
       </Suspense>
     </div>

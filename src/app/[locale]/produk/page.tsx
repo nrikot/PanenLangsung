@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis } from '@/components/ui/pagination';
+import { SkeletonProductGrid } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
 
 interface Product {
@@ -351,9 +352,7 @@ export default function ProdukPage() {
         </div>
 
         {loading ? (
-          <div className='py-20 text-center dark:text-[#8b9e93] text-slate-500'>
-            {t('loadingProducts')}
-          </div>
+          <SkeletonProductGrid count={8} label={t('loadingProducts')} />
         ) : products.length === 0 ? (
           <div className='py-20 text-center dark:text-[#8b9e93] text-slate-500'>
             {t('noProductsFound')}

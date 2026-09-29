@@ -161,6 +161,46 @@
   }
 }
 
+@layer components {
+  .skeleton {
+    @apply relative overflow-hidden bg-slate-200 dark:bg-white/[0.07];
+  }
+  .skeleton::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0;
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--foreground) / 0.04) 40%,
+      hsl(var(--foreground) / 0.08) 50%,
+      hsl(var(--foreground) / 0.04) 60%,
+      transparent
+    );
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+  .skeleton-panel {
+    @apply rounded-xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.03];
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+    background-image: none;
+  }
+}
+
 /* Topographic line pattern for dark mode hero */
 .hero-topo-pattern {
   background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 200 Q100 160 200 200 T400 200' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 180 Q100 140 200 180 T400 180' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 220 Q100 180 200 220 T400 220' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 160 Q100 120 200 160 T400 160' fill='none' stroke='%23ffffff' stroke-width='0.4'/%3E%3Cpath d='M0 240 Q100 200 200 240 T400 240' fill='none' stroke='%23ffffff' stroke-width='0.4'/%3E%3Cpath d='M0 140 Q100 100 200 140 T400 140' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 260 Q100 220 200 260 T400 260' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 120 Q100 80 200 120 T400 120' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M0 280 Q100 240 200 280 T400 280' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3C/svg%3E");

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
+import { SkeletonTable } from "@/components/ui/skeleton";
 
 interface Buyer {
   id: string;
@@ -89,7 +90,7 @@ export default function AdminPembeliPage() {
       <p className="mb-4 text-sm dark:text-[#8b9e93] text-slate-500">{t("totalBuyers", { count: total })}</p>
 
       {loading ? (
-        <div className="py-12 text-center dark:text-[#8b9e93] text-slate-500">{t("loading")}</div>
+        <SkeletonTable rows={10} columns={7} label={t("loading")} />
       ) : buyers.length === 0 ? (
         <div className="rounded-xl border dark:bg-white/[0.03] dark:border-white/10 bg-white border-black/10 p-12 text-center shadow-sm">
           <p className="dark:text-gray-400 text-slate-500">{t("noBuyers")}</p>

@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/lib/auth-context';
 import { buildErrorMessage } from '@/lib/utils';
 import Header from '@/components/Header';
+import { Skeleton, SkeletonForm, SkeletonPage, SkeletonTitle } from '@/components/ui/skeleton';
 
 interface Commodity {
   id: string;
@@ -263,9 +264,13 @@ export default function AdminEditProductPage() {
 
   if (loading)
     return (
-      <div className='flex min-h-screen items-center justify-center'>
-        {t('loading')}
-      </div>
+      <SkeletonPage label={t('loading')}>
+        <div className='mx-auto max-w-3xl space-y-6'>
+          <SkeletonTitle />
+          <Skeleton className='h-32 w-full rounded-xl' />
+          <SkeletonForm fields={8} />
+        </div>
+      </SkeletonPage>
     );
 
   return (
@@ -415,9 +420,10 @@ export default function AdminEditProductPage() {
                 ))}
               </select>
               {farmers.length === 0 && (
-                <p className='mt-1 text-xs dark:text-gray-500 text-slate-400'>
-                  Memuat data petani...
-                </p>
+                <div className="mt-1" role="status" aria-busy="true">
+                  <span className="sr-only">{t('loading')}</span>
+                  <Skeleton className="h-2.5 w-36" />
+                </div>
               )}
             </div>
           </div>

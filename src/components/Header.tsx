@@ -9,6 +9,7 @@ import { useTheme } from '@/lib/theme-context';
 import ThemeToggle from '@/components/ThemeToggle';
 import NotificationBell from '@/components/NotificationBell';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Menu, X, User, LayoutDashboard, LogOut, Shield } from 'lucide-react';
 
 export default function Header() {
@@ -122,9 +123,7 @@ export default function Header() {
           {loading ? null : user && <NotificationBell />}
 
           {loading ? (
-            <div
-              className={`h-9 w-20 animate-pulse rounded-lg ${isDark ? 'bg-white/5' : 'bg-black/5'}`}
-            />
+            <Skeleton className={`h-9 w-20 rounded-lg ${isDark ? 'dark:bg-white/5' : 'bg-black/5'}`} />
           ) : user ? (
             /* ── desktop user dropdown ── */
             <div className='relative' ref={userMenuRef}>

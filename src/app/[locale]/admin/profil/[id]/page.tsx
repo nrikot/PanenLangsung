@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import Header from "@/components/Header";
+import { Skeleton, SkeletonPage, SkeletonTitle } from "@/components/ui/skeleton";
 
 interface UserData {
   id: string;
@@ -114,7 +115,25 @@ export default function AdminUserProfilePage() {
     }
   }
 
-  if (authLoading || loading) return <div className="flex min-h-screen items-center justify-center dark:text-[#8b9e93] text-slate-500">{tp("loading")}</div>;
+  if (authLoading || loading)
+    return (
+      <SkeletonPage label={tp("loading")}>
+        <div className="mx-auto max-w-3xl space-y-6">
+          <SkeletonTitle />
+          {[0, 1, 2].map(section => (
+            <div key={section} className="skeleton-panel space-y-4 p-6">
+              <Skeleton className="h-4 w-40" />
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between gap-4">
+                  <Skeleton className="h-3 w-32" />
+                  <Skeleton className="h-3 w-44" />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </SkeletonPage>
+    );
   if (!target) return <div className="flex min-h-screen items-center justify-center dark:text-[#8b9e93] text-slate-500">{t("userNotFound")}</div>;
 
   const isPetani = target.role === "petani";

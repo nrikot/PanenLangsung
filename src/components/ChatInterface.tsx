@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import { Send, ArrowLeft, MessageSquare } from "lucide-react";
+import { SkeletonChat, SkeletonThreadList } from "@/components/ui/skeleton";
 
 interface Participant {
   id: string;
@@ -191,10 +192,12 @@ export default function ChatInterface() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-sm" style={{ color: "var(--feature-sub)" }}>
-          {t("chat.loading")}
-        </div>
+      <div className="p-4">
+        {selectedThread ? (
+          <SkeletonChat messages={6} label={t("chat.loading")} />
+        ) : (
+          <SkeletonThreadList label={t("chat.loading")} />
+        )}
       </div>
     );
   }

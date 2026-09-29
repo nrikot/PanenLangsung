@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useTranslations } from "next-intl";
 import { buildErrorMessage } from "@/lib/utils";
 import Header from "@/components/Header";
+import { Skeleton, SkeletonForm, SkeletonPage, SkeletonTitle } from "@/components/ui/skeleton";
 
 interface Commodity {
   id: string;
@@ -160,7 +161,16 @@ export default function EditProdukPage() {
     }
   }
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center">{tc("loading")}</div>;
+  if (loading)
+    return (
+      <SkeletonPage label={tc("loading")}>
+        <div className="mx-auto max-w-2xl space-y-6">
+          <SkeletonTitle />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <SkeletonForm fields={8} />
+        </div>
+      </SkeletonPage>
+    );
 
   return (
     <div className="min-h-screen dark:bg-[#0d1410] bg-slate-50">
